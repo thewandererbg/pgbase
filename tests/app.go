@@ -12,10 +12,10 @@ import (
 	"sync"
 
 	"github.com/pocketbase/dbx"
-	"github.com/pocketbase/pocketbase/core"
-	"github.com/pocketbase/pocketbase/tools/hook"
+	"github.com/thewandererbg/pgbase/core"
+	"github.com/thewandererbg/pgbase/tools/hook"
 
-	_ "github.com/pocketbase/pocketbase/migrations"
+	_ "github.com/thewandererbg/pgbase/migrations"
 
 	_ "github.com/lib/pq"
 )

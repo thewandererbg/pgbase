@@ -8,10 +8,10 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/pocketbase/pocketbase/core"
-	"github.com/pocketbase/pocketbase/forms"
-	"github.com/pocketbase/pocketbase/tests"
-	"github.com/pocketbase/pocketbase/tools/filesystem"
+	"github.com/thewandererbg/pgbase/core"
+	"github.com/thewandererbg/pgbase/forms"
+	"github.com/thewandererbg/pgbase/tests"
+	"github.com/thewandererbg/pgbase/tools/filesystem"
 )
 
 func TestRecordUpsertLoad(t *testing.T) {

@@ -6,9 +6,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/pocketbase/pocketbase/core"
-	"github.com/pocketbase/pocketbase/tests"
-	"github.com/pocketbase/pocketbase/tools/types"
+	"github.com/thewandererbg/pgbase/core"
+	"github.com/thewandererbg/pgbase/tests"
+	"github.com/thewandererbg/pgbase/tools/types"
 )
 
 func TestDateFieldBaseMethods(t *testing.T) {

@@ -9,10 +9,10 @@ import (
 	"strings"
 
 	"github.com/pocketbase/dbx"
-	"github.com/pocketbase/pocketbase/tools/search"
-	"github.com/pocketbase/pocketbase/tools/security"
-	"github.com/pocketbase/pocketbase/tools/types"
 	"github.com/spf13/cast"
+	"github.com/thewandererbg/pgbase/tools/search"
+	"github.com/thewandererbg/pgbase/tools/security"
+	"github.com/thewandererbg/pgbase/tools/types"
 )
 
 // filter modifiers

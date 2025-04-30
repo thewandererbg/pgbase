@@ -1,4 +1,4 @@
-package pocketbase
+package pgbase
 
 import (
 	"os"

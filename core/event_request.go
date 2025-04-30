@@ -6,8 +6,8 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/pocketbase/pocketbase/tools/inflector"
-	"github.com/pocketbase/pocketbase/tools/router"
+	"github.com/thewandererbg/pgbase/tools/inflector"
+	"github.com/thewandererbg/pgbase/tools/router"
 )
 
 // Common request store keys used by the middlewares and api handlers.

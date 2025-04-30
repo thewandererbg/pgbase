@@ -40,7 +40,7 @@
 
 <SdkTabs
     js={`
-        import PocketBase from 'pocketbase';
+        import PocketBase from 'pgbase';
 
         const pb = new PocketBase('${backendAbsUrl}');
 
@@ -67,7 +67,7 @@
         pb.collection('${collection?.name}').unsubscribe(); // remove all subscriptions in the collection
     `}
     dart={`
-        import 'package:pocketbase/pocketbase.dart';
+        import 'package:pgbase/pgbase.dart';
 
         final pb = PocketBase('${backendAbsUrl}');
 

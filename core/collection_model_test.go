@@ -11,11 +11,11 @@ import (
 	"testing"
 
 	"github.com/pocketbase/dbx"
-	"github.com/pocketbase/pocketbase/core"
-	"github.com/pocketbase/pocketbase/tests"
-	"github.com/pocketbase/pocketbase/tools/dbutils"
-	"github.com/pocketbase/pocketbase/tools/hook"
-	"github.com/pocketbase/pocketbase/tools/types"
+	"github.com/thewandererbg/pgbase/core"
+	"github.com/thewandererbg/pgbase/tests"
+	"github.com/thewandererbg/pgbase/tools/dbutils"
+	"github.com/thewandererbg/pgbase/tools/hook"
+	"github.com/thewandererbg/pgbase/tools/types"
 )
 
 func TestNewCollection(t *testing.T) {

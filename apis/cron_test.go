@@ -5,9 +5,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/pocketbase/pocketbase/core"
-	"github.com/pocketbase/pocketbase/tests"
 	"github.com/spf13/cast"
+	"github.com/thewandererbg/pgbase/core"
+	"github.com/thewandererbg/pgbase/tests"
 )
 
 func TestCronsList(t *testing.T) {

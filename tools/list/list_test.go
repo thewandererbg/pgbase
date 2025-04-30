@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/pocketbase/pocketbase/tools/list"
-	"github.com/pocketbase/pocketbase/tools/types"
+	"github.com/thewandererbg/pgbase/tools/list"
+	"github.com/thewandererbg/pgbase/tools/types"
 )
 
 func TestSubtractSliceString(t *testing.T) {

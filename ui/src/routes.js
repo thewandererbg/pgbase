@@ -10,15 +10,17 @@ import PageMail from "@/components/settings/PageMail.svelte";
 import PageStorage from "@/components/settings/PageStorage.svelte";
 import PageSuperuserLogin from "@/components/superusers/PageSuperuserLogin.svelte";
 import ApiClient from "@/utils/ApiClient";
-import { isTokenExpired } from "pocketbase";
+import { isTokenExpired } from "pgbase";
 import { wrap } from "svelte-spa-router/wrap";
 
 const routes = {
     "/pbinstal/:token": wrap({
         asyncComponent: () => import("@/components/base/PageInstaller.svelte"),
-        conditions: [(details) => {
-            return details.params.token && !isTokenExpired(details.params.token)
-        }],
+        conditions: [
+            (details) => {
+                return details.params.token && !isTokenExpired(details.params.token);
+            },
+        ],
         userData: { showAppSidebar: false },
     }),
 

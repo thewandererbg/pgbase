@@ -118,7 +118,7 @@ type excludeHooks<Type> = {
 type CoreApp = excludeHooks<core.App>;
 
 // PocketBase without the on* hook methods
-type PocketBase = excludeHooks<pocketbase.PocketBase>;
+type PocketBase = excludeHooks<pgbase.PocketBase>;
 
 /**
  * `$app` is the current running PocketBase instance that is globally
@@ -705,7 +705,7 @@ declare class SubscriptionMessage implements subscriptions.Message {
 
 /**
  * `$dbx` defines common utility for working with the DB abstraction.
- * For examples and guides please check the [Database guide](https://pocketbase.io/docs/js-database).
+ * For examples and guides please check the [Database guide](https://pgbase.io/docs/js-database).
  *
  * @group PocketBase
  */
@@ -8416,7 +8416,7 @@ namespace core {
      *
      * Note that if your pb_data has custom network mounts as subdirectories, then
      * it is possible the restore to fail during the `os.Rename` operations
-     * (see https://github.com/pocketbase/pocketbase/issues/4647).
+     * (see https://github.com/thewandererbg/pgbase/issues/4647).
      */
     restoreBackup(ctx: context.Context, name: string): void;
   }
@@ -8826,7 +8826,7 @@ namespace core {
      *
      * This usually shouldn't be needed but some OAuth2 vendors, like the LinkedIn OIDC,
      * may require manual adjustment due to returning error if extra parameters are added to the request
-     * (https://github.com/pocketbase/pocketbase/discussions/3799#discussioncomment-7640312)
+     * (https://github.com/thewandererbg/pgbase/discussions/3799#discussioncomment-7640312)
      */
     pkce?: boolean;
     name: string;
@@ -14296,7 +14296,7 @@ namespace apis {
      * token for the systemSuperuser) to the installer UI so that users can
      * create their own custom superuser record.
      *
-     * See https://github.com/pocketbase/pocketbase/discussions/5814.
+     * See https://github.com/thewandererbg/pgbase/discussions/5814.
      */
     (app: CoreApp, systemSuperuser: core.Record, baseURL: string): void;
   }
@@ -14789,7 +14789,7 @@ namespace apis {
   }
 }
 
-namespace pocketbase {
+namespace pgbase {
   /**
    * PocketBase defines a PocketBase app launcher.
    *

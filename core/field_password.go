@@ -8,8 +8,8 @@ import (
 	"strings"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
-	"github.com/pocketbase/pocketbase/core/validators"
 	"github.com/spf13/cast"
+	"github.com/thewandererbg/pgbase/core/validators"
 	"golang.org/x/crypto/bcrypt"
 )
 

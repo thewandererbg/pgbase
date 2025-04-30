@@ -14,15 +14,15 @@ import (
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/pocketbase/dbx"
-	"github.com/pocketbase/pocketbase/core/validators"
-	"github.com/pocketbase/pocketbase/tools/dbutils"
-	"github.com/pocketbase/pocketbase/tools/filesystem"
-	"github.com/pocketbase/pocketbase/tools/hook"
-	"github.com/pocketbase/pocketbase/tools/inflector"
-	"github.com/pocketbase/pocketbase/tools/list"
-	"github.com/pocketbase/pocketbase/tools/store"
-	"github.com/pocketbase/pocketbase/tools/types"
 	"github.com/spf13/cast"
+	"github.com/thewandererbg/pgbase/core/validators"
+	"github.com/thewandererbg/pgbase/tools/dbutils"
+	"github.com/thewandererbg/pgbase/tools/filesystem"
+	"github.com/thewandererbg/pgbase/tools/hook"
+	"github.com/thewandererbg/pgbase/tools/inflector"
+	"github.com/thewandererbg/pgbase/tools/list"
+	"github.com/thewandererbg/pgbase/tools/store"
+	"github.com/thewandererbg/pgbase/tools/types"
 )
 
 // used as a workaround by some fields for persisting local state between various events

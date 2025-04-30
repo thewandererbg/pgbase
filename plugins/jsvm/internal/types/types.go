@@ -11,9 +11,9 @@ import (
 	"time"
 
 	"github.com/pocketbase/tygoja"
-	"github.com/pocketbase/pocketbase/core"
-	"github.com/pocketbase/pocketbase/plugins/jsvm"
-	"github.com/pocketbase/pocketbase/tools/list"
+	"github.com/thewandererbg/pgbase/core"
+	"github.com/thewandererbg/pgbase/plugins/jsvm"
+	"github.com/thewandererbg/pgbase/tools/list"
 )
 
 const heading = `
@@ -128,7 +128,7 @@ type excludeHooks<Type> = {
 // core.App without the on* hook methods
 type CoreApp = excludeHooks<ORIGINAL_CORE_APP>
 
-// pocketbase.PocketBase without the on* hook methods
+// pgbase.PocketBase without the on* hook methods
 type PocketBase = excludeHooks<ORIGINAL_POCKETBASE>
 
 /**
@@ -713,7 +713,7 @@ declare class SubscriptionMessage implements subscriptions.Message {
 
 /**
  * ` + "`$dbx`" + ` defines common utility for working with the DB abstraction.
- * For examples and guides please check the [Database guide](https://pocketbase.io/docs/js-database).
+ * For examples and guides please check the [Database guide](https://pgbase.io/docs/js-database).
  *
  * @group PocketBase
  */
@@ -1144,19 +1144,19 @@ func main() {
 
 	gen := tygoja.New(tygoja.Config{
 		Packages: map[string][]string{
-			"github.com/go-ozzo/ozzo-validation/v4":                {"Error"},
-			"github.com/pocketbase/dbx":                            {"*"},
-			"github.com/pocketbase/pocketbase/tools/security":   {"*"},
-			"github.com/pocketbase/pocketbase/tools/filesystem": {"*"},
-			"github.com/pocketbase/pocketbase/tools/template":   {"*"},
-			"github.com/pocketbase/pocketbase/mails":            {"*"},
-			"github.com/pocketbase/pocketbase/apis":             {"*"},
-			"github.com/pocketbase/pocketbase/core":             {"*"},
-			"github.com/pocketbase/pocketbase/forms":            {"*"},
-			"github.com/pocketbase/pocketbase":                  {"*"},
-			"path/filepath":                                        {"*"},
-			"os":                                                   {"*"},
-			"os/exec":                                              {"Command"},
+			"github.com/go-ozzo/ozzo-validation/v4":            {"Error"},
+			"github.com/pocketbase/dbx":                        {"*"},
+			"github.com/thewandererbg/pgbase/tools/security":   {"*"},
+			"github.com/thewandererbg/pgbase/tools/filesystem": {"*"},
+			"github.com/thewandererbg/pgbase/tools/template":   {"*"},
+			"github.com/thewandererbg/pgbase/mails":            {"*"},
+			"github.com/thewandererbg/pgbase/apis":             {"*"},
+			"github.com/thewandererbg/pgbase/core":             {"*"},
+			"github.com/thewandererbg/pgbase/forms":            {"*"},
+			"github.com/thewandererbg/pgbase":                  {"*"},
+			"path/filepath":                                    {"*"},
+			"os":                                               {"*"},
+			"os/exec":                                          {"Command"},
 		},
 		FieldNameFormatter: func(s string) string {
 			return mapper.FieldName(nil, reflect.StructField{Name: s})
@@ -1199,9 +1199,9 @@ func main() {
 
 	// replace the original app interfaces with their non-"on*"" hooks equivalents
 	result = strings.ReplaceAll(result, "core.App", "CoreApp")
-	result = strings.ReplaceAll(result, "pocketbase.PocketBase", "PocketBase")
+	result = strings.ReplaceAll(result, "pgbase.PocketBase", "PocketBase")
 	result = strings.ReplaceAll(result, "ORIGINAL_CORE_APP", "core.App")
-	result = strings.ReplaceAll(result, "ORIGINAL_POCKETBASE", "pocketbase.PocketBase")
+	result = strings.ReplaceAll(result, "ORIGINAL_POCKETBASE", "pgbase.PocketBase")
 
 	// prepend a timestamp with the generation time
 	// so that it can be compared without reading the entire file

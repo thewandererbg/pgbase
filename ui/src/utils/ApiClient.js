@@ -1,4 +1,4 @@
-import PocketBase, { LocalAuthStore, isTokenExpired } from "pocketbase";
+import PocketBase, { LocalAuthStore, isTokenExpired } from "pgbase";
 // ---
 import { protectedFilesCollectionsCache } from "@/stores/collections";
 import { setErrors } from "@/stores/errors";
@@ -35,7 +35,7 @@ PocketBase.prototype.error = function (err, notify = true, defaultMsg = "") {
         return;
     }
 
-    const statusCode = (err?.status << 0) || 400;
+    const statusCode = err?.status << 0 || 400;
     const responseData = err?.data || {};
     const msg = responseData.message || err.message || defaultMsg;
 
@@ -70,9 +70,10 @@ PocketBase.prototype.getSuperuserFileToken = async function (collectionId = "") 
 
     if (collectionId) {
         const protectedCollections = get(protectedFilesCollectionsCache);
-        needToken = typeof protectedCollections[collectionId] !== "undefined"
-            ? protectedCollections[collectionId]
-            : true;
+        needToken =
+            typeof protectedCollections[collectionId] !== "undefined"
+                ? protectedCollections[collectionId]
+                : true;
     }
 
     if (!needToken) {
@@ -96,7 +97,7 @@ PocketBase.prototype.getSuperuserFileToken = async function (collectionId = "") 
     }
 
     return token;
-}
+};
 
 // Custom auth store to sync the svelte superuser store state with the authorized superuser instance.
 class AppAuthStore extends LocalAuthStore {

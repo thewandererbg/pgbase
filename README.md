@@ -7,13 +7,17 @@ The only difference: PostgreSQL powers the backend.
 
 Based on [PocketBase](https://pocketbase.io) version 0.27.1
 
+## Differences with PocketBase
+- Backup feature not work
+- Delete with cascade only
+
 ## Quickstart
 
 ```bash
-git clone https://github.com/thewandererbg/pocketbase.git
+git clone https://github.com/thewandererbg/pgbase.git
 cd examples/base
-GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o pocketbase
-./pocketbase serve
+GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o pgbase
+./pgbase serve
 ```
 
 Set your database connection:

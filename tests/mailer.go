@@ -4,7 +4,7 @@ import (
 	"slices"
 	"sync"
 
-	"github.com/pocketbase/pocketbase/tools/mailer"
+	"github.com/thewandererbg/pgbase/tools/mailer"
 )
 
 var _ mailer.Mailer = (*TestMailer)(nil)

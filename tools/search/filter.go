@@ -9,9 +9,9 @@ import (
 
 	"github.com/ganigeorgiev/fexpr"
 	"github.com/pocketbase/dbx"
-	"github.com/pocketbase/pocketbase/tools/security"
-	"github.com/pocketbase/pocketbase/tools/store"
 	"github.com/spf13/cast"
+	"github.com/thewandererbg/pgbase/tools/security"
+	"github.com/thewandererbg/pgbase/tools/store"
 )
 
 // FilterData is a filter expression string following the `fexpr` package grammar.

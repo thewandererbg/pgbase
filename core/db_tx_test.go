@@ -4,8 +4,8 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/pocketbase/pocketbase/core"
-	"github.com/pocketbase/pocketbase/tests"
+	"github.com/thewandererbg/pgbase/core"
+	"github.com/thewandererbg/pgbase/tests"
 )
 
 func TestRunInTransaction(t *testing.T) {

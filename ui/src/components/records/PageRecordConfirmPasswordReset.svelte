@@ -1,5 +1,5 @@
 <script>
-    import PocketBase, { getTokenPayload } from "pocketbase";
+    import PocketBase, { getTokenPayload } from "pgbase";
     import ApiClient from "@/utils/ApiClient";
     import CommonHelper from "@/utils/CommonHelper";
     import FullPage from "@/components/base/FullPage.svelte";

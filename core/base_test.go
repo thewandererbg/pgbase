@@ -12,10 +12,10 @@ import (
 	_ "unsafe"
 
 	"github.com/pocketbase/dbx"
-	"github.com/pocketbase/pocketbase/core"
-	"github.com/pocketbase/pocketbase/tests"
-	"github.com/pocketbase/pocketbase/tools/logger"
-	"github.com/pocketbase/pocketbase/tools/mailer"
+	"github.com/thewandererbg/pgbase/core"
+	"github.com/thewandererbg/pgbase/tests"
+	"github.com/thewandererbg/pgbase/tools/logger"
+	"github.com/thewandererbg/pgbase/tools/mailer"
 
 	_ "github.com/lib/pq"
 )

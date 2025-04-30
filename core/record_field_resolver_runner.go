@@ -10,12 +10,12 @@ import (
 	"strings"
 
 	"github.com/pocketbase/dbx"
-	"github.com/pocketbase/pocketbase/tools/dbutils"
-	"github.com/pocketbase/pocketbase/tools/inflector"
-	"github.com/pocketbase/pocketbase/tools/list"
-	"github.com/pocketbase/pocketbase/tools/search"
-	"github.com/pocketbase/pocketbase/tools/security"
 	"github.com/spf13/cast"
+	"github.com/thewandererbg/pgbase/tools/dbutils"
+	"github.com/thewandererbg/pgbase/tools/inflector"
+	"github.com/thewandererbg/pgbase/tools/list"
+	"github.com/thewandererbg/pgbase/tools/search"
+	"github.com/thewandererbg/pgbase/tools/security"
 )
 
 // maxNestedRels defines the max allowed nested relations depth.
@@ -497,7 +497,7 @@ func (r *runner) processActiveProps() (*search.ResolverResult, error) {
 				return nil, fmt.Errorf("failed to initialize back relation field %q", backField.GetName())
 			}
 			if backRelField.CollectionId != collection.Id {
-				// https://github.com/pocketbase/pocketbase/discussions/6590#discussioncomment-12496581
+				// https://github.com/thewandererbg/pgbase/discussions/6590#discussioncomment-12496581
 				if r.nullifyMisingField {
 					return &search.ResolverResult{Identifier: "NULL"}, nil
 				}
@@ -772,7 +772,7 @@ func (r *runner) processLastProp(collection *Collection, prop string) (*search.R
 
 	// wrap in json_extract to ensure that top-level primitives
 	// stored as json work correctly when compared to their SQL equivalent
-	// (https://github.com/pocketbase/pocketbase/issues/4068)
+	// (https://github.com/thewandererbg/pgbase/issues/4068)
 	if field.Type() == FieldTypeJSON {
 		result.NoCoalesce = true
 		result.Identifier = dbutils.JSONExtract(r.activeTableAlias+"."+cleanFieldName, "")

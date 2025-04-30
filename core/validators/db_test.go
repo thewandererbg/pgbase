@@ -7,8 +7,8 @@ import (
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/lib/pq"
-	"github.com/pocketbase/pocketbase/core/validators"
-	"github.com/pocketbase/pocketbase/tests"
+	"github.com/thewandererbg/pgbase/core/validators"
+	"github.com/thewandererbg/pgbase/tests"
 )
 
 func TestUniqueId(t *testing.T) {

@@ -109,7 +109,7 @@
 <!-- prettier-ignore -->
 <SdkTabs
     js={`
-import PocketBase from 'pocketbase';
+import PocketBase from 'pgbase';
 
 const pb = new PocketBase('${backendAbsUrl}');
 
@@ -121,7 +121,7 @@ const data = ${JSON.stringify(getPayload(collection), null, 4)};
 const record = await pb.collection('${collection?.name}').update('RECORD_ID', data);
     `}
     dart={`
-import 'package:pocketbase/pocketbase.dart';
+import 'package:pgbase/pgbase.dart';
 
 final pb = PocketBase('${backendAbsUrl}');
 

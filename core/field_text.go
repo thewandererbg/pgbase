@@ -11,8 +11,8 @@ import (
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/pocketbase/dbx"
 	"github.com/spf13/cast"
-	"github.com/pocketbase/pocketbase/core/validators"
-	"github.com/pocketbase/pocketbase/tools/security"
+	"github.com/thewandererbg/pgbase/core/validators"
+	"github.com/thewandererbg/pgbase/tools/security"
 )
 
 func init() {

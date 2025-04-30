@@ -1,7 +1,7 @@
 <script>
     import { createEventDispatcher, tick } from "svelte";
     import { slide } from "svelte/transition";
-    import { ClientResponseError } from "pocketbase";
+    import { ClientResponseError } from "pgbase";
     import ApiClient from "@/utils/ApiClient";
     import CommonHelper from "@/utils/CommonHelper";
     import tooltip from "@/actions/tooltip";

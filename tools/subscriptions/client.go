@@ -7,8 +7,8 @@ import (
 	"sync"
 
 	"github.com/spf13/cast"
-	"github.com/pocketbase/pocketbase/tools/inflector"
-	"github.com/pocketbase/pocketbase/tools/security"
+	"github.com/thewandererbg/pgbase/tools/inflector"
+	"github.com/thewandererbg/pgbase/tools/security"
 )
 
 const optionsParam = "options"

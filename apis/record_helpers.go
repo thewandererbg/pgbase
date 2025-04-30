@@ -9,12 +9,12 @@ import (
 	"time"
 
 	"github.com/pocketbase/dbx"
-	"github.com/pocketbase/pocketbase/core"
-	"github.com/pocketbase/pocketbase/mails"
-	"github.com/pocketbase/pocketbase/tools/router"
-	"github.com/pocketbase/pocketbase/tools/routine"
-	"github.com/pocketbase/pocketbase/tools/search"
-	"github.com/pocketbase/pocketbase/tools/security"
+	"github.com/thewandererbg/pgbase/core"
+	"github.com/thewandererbg/pgbase/mails"
+	"github.com/thewandererbg/pgbase/tools/router"
+	"github.com/thewandererbg/pgbase/tools/routine"
+	"github.com/thewandererbg/pgbase/tools/search"
+	"github.com/thewandererbg/pgbase/tools/security"
 )
 
 const (

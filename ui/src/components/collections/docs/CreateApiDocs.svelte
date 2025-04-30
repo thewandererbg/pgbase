@@ -88,7 +88,7 @@
 <!-- prettier-ignore -->
 <SdkTabs
     js={`
-import PocketBase from 'pocketbase';
+import PocketBase from 'pgbase';
 
 const pb = new PocketBase('${backendAbsUrl}');
 
@@ -105,7 +105,7 @@ await pb.collection('${collection?.name}').requestVerification('test@example.com
 ` : ""
 )}
     dart={`
-import 'package:pocketbase/pocketbase.dart';
+import 'package:pgbase/pgbase.dart';
 
 final pb = PocketBase('${backendAbsUrl}');
 
