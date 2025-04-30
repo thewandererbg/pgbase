@@ -10,32 +10,32 @@ import (
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 	"github.com/pocketbase/dbx"
-	"github.com/pocketbase/pocketbase"
-	"github.com/pocketbase/pocketbase/apis"
-	"github.com/pocketbase/pocketbase/core"
-	"github.com/pocketbase/pocketbase/plugins/ghupdate"
-	"github.com/pocketbase/pocketbase/plugins/jsvm"
-	"github.com/pocketbase/pocketbase/plugins/migratecmd"
-	"github.com/pocketbase/pocketbase/tools/hook"
+	"github.com/thewandererbg/pgbase"
+	"github.com/thewandererbg/pgbase/apis"
+	"github.com/thewandererbg/pgbase/core"
+	"github.com/thewandererbg/pgbase/plugins/ghupdate"
+	"github.com/thewandererbg/pgbase/plugins/jsvm"
+	"github.com/thewandererbg/pgbase/plugins/migratecmd"
+	"github.com/thewandererbg/pgbase/tools/hook"
 )
 
 func main() {
 	godotenv.Load()
 
 	if os.Getenv("PB_DATA_URI") == "" {
-		log.Fatal("Please provide PB_DATA_DB env variable")
+		log.Fatal("Please provide PB_DATA_URI env variable")
 	}
-	if os.Getenv("PB_DATA_URI") == "" {
-		log.Fatal("Please provide PB_AUX_DB env variable")
+	if os.Getenv("PB_AUX_URI") == "" {
+		log.Fatal("Please provide PB_AUX_URI env variable")
 	}
 
-	app := pocketbase.NewWithConfig(pocketbase.Config{
+	app := pgbase.NewWithConfig(pgbase.Config{
 		DefaultDev: true,
 		DBConnect: func(dbPath string) (*dbx.DB, error) {
 			if strings.Contains(dbPath, "data.db") {
-				return dbx.Open("postgres", os.Getenv("PB_DATA_DB"))
+				return dbx.Open("postgres", os.Getenv("PB_DATA_URI"))
 			}
-			return dbx.Open("postgres", os.Getenv("PB_AUX_DB"))
+			return dbx.Open("postgres", os.Getenv("PB_AUX_URI"))
 		},
 	})
 
