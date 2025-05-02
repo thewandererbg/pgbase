@@ -1,7 +1,7 @@
 <script>
     import FullPage from "@/components/base/FullPage.svelte";
     import ApiClient from "@/utils/ApiClient";
-    import PocketBase, { getTokenPayload, isTokenExpired } from "pgbase";
+    import PocketBase, { getTokenPayload, isTokenExpired } from "pocketbase";
 
     export let params;
 

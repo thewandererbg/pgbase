@@ -1,4 +1,4 @@
-import PocketBase, { LocalAuthStore, isTokenExpired } from "pgbase";
+import PocketBase, { LocalAuthStore, isTokenExpired } from "pocketbase";
 // ---
 import { protectedFilesCollectionsCache } from "@/stores/collections";
 import { setErrors } from "@/stores/errors";

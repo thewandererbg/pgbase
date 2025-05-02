@@ -10,7 +10,7 @@ import PageMail from "@/components/settings/PageMail.svelte";
 import PageStorage from "@/components/settings/PageStorage.svelte";
 import PageSuperuserLogin from "@/components/superusers/PageSuperuserLogin.svelte";
 import ApiClient from "@/utils/ApiClient";
-import { isTokenExpired } from "pgbase";
+import { isTokenExpired } from "pocketbase";
 import { wrap } from "svelte-spa-router/wrap";
 
 const routes = {

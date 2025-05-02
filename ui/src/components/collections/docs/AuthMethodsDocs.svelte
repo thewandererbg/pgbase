@@ -51,7 +51,7 @@
 
 <SdkTabs
     js={`
-        import PocketBase from 'pgbase';
+        import PocketBase from 'pocketbase';
 
         const pb = new PocketBase('${backendAbsUrl}');
 
@@ -60,7 +60,7 @@
         const result = await pb.collection('${collection?.name}').listAuthMethods();
     `}
     dart={`
-        import 'package:pgbase/pgbase.dart';
+        import 'package:pocketbase/pocketbase.dart';
 
         final pb = PocketBase('${backendAbsUrl}');
 

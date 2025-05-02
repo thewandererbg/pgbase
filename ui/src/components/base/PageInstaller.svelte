@@ -1,7 +1,7 @@
 <script>
     import { tick } from "svelte";
     import { replace } from "svelte-spa-router";
-    import { getTokenPayload } from "pgbase";
+    import { getTokenPayload } from "pocketbase";
     import ApiClient from "@/utils/ApiClient";
     import { addInfoToast, addErrorToast } from "@/stores/toasts";
     import { confirm } from "@/stores/confirmation";

@@ -67,7 +67,7 @@
 
 <SdkTabs
     js={`
-        import PocketBase from 'pgbase';
+        import PocketBase from 'pocketbase';
 
         const pb = new PocketBase('${backendAbsUrl}');
 
@@ -90,7 +90,7 @@
         pb.authStore.clear();
     `}
     dart={`
-        import 'package:pgbase/pgbase.dart';
+        import 'package:pocketbase/pocketbase.dart';
         import 'package:url_launcher/url_launcher.dart';
 
         final pb = PocketBase('${backendAbsUrl}');

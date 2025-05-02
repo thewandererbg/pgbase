@@ -84,7 +84,7 @@
         <SdkTabs
             class="m-b-0"
             js={`
-                import PocketBase from 'pgbase';
+                import PocketBase from 'pocketbase';
 
                 const token = "...";
 
@@ -93,7 +93,7 @@
                 pb.authStore.save(token, null);
             `}
             dart={`
-                import 'package:pgbase/pgbase.dart';
+                import 'package:pocketbase/pocketbase.dart';
 
                 final token = "...";
 
