@@ -30,7 +30,7 @@ func main() {
 	}
 
 	app := pgbase.NewWithConfig(pgbase.Config{
-		DefaultDev: true,
+		DefaultDev: false,
 		DBConnect: func(dbPath string) (*dbx.DB, error) {
 			if strings.Contains(dbPath, "data.db") {
 				return dbx.Open("postgres", os.Getenv("PB_DATA_URI"))

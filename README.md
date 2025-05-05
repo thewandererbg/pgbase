@@ -14,7 +14,7 @@ Based on [PocketBase](https://pocketbase.io) version 0.27.1
 ## Quickstart
 
 ```bash
-git clone https://github.com/thewandererbg/pgbase.git
+git clone git@github.com:thewandererbg/pgbase.git
 cd examples/base
 GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o pgbase
 ./pgbase serve
@@ -25,6 +25,15 @@ Set your database connection:
 ```bash
 export PB_DATA_URI="postgres://user:pass@localhost:5432/pbdata?sslmode=disable"
 export PB_AUX_URI="postgres://user:pass@localhost:5432/pbaux?sslmode=disable"
+```
+
+## Docker
+
+```bash
+git clone git@github.com:thewandererbg/pgbase.git
+cd docker
+cp .env.sample .env
+docker compose up -d
 ```
 
 Access the Admin UI at http://localhost:8090/_/.

@@ -1,0 +1,8 @@
+# ignore everything
+/*
+
+# exclude from the ignore filter
+!docker-compose.yml
+!Dockerfile
+!.gitignore
+!.env.sample

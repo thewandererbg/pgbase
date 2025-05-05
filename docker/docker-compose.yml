@@ -1,0 +1,10 @@
+services:
+  server:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: "pgbase"
+    ports:
+      - 8090:8090
+    volumes:
+      - ./pb_data:/pb/pb_data
