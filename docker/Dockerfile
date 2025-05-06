@@ -20,7 +20,7 @@ WORKDIR /pb
 COPY --from=builder /app/pgbase .
 
 # Copy .env file into the container
-COPY docker/.env .
+# COPY docker/.env .
 
 # Ensure the pgbase binary is executable
 RUN chmod +x pgbase
