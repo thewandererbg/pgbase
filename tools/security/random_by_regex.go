@@ -24,6 +24,23 @@ var anyCharNotNLPairs = []rune{'A', 'Z', 'a', 'z', '0', '9'}
 //
 // This function is inspired by github.com/pipe01/revregexp, github.com/lucasjones/reggen and other similar packages.
 func RandomStringByRegex(pattern string, optFlags ...syntax.Flags) (string, error) {
+	if strings.Contains(pattern, "_ulid") {
+		prefix := strings.Split(pattern, "_")[0]
+		return GeneratePrefixedULID(prefix), nil
+	}
+
+	if pattern == "ulid" {
+		return GenerateULID(), nil
+	}
+
+	if pattern == "uuid" || pattern == "uuidv4" {
+		return GenerateUUIDv4(), nil
+	}
+
+	if pattern == "uuidv7" {
+		return GenerateUUIDv7(), nil
+	}
+
 	var flags syntax.Flags
 	if len(optFlags) == 0 {
 		flags = syntax.Perl
