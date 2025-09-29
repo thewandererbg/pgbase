@@ -1,32 +1,32 @@
 module github.com/thewandererbg/pgbase
 
-go 1.23.0
+go 1.24.0
 
 require (
 	github.com/disintegration/imaging v1.6.2
 	github.com/domodwyer/mailyak/v3 v3.6.2
-	github.com/dop251/goja v0.0.0-20250309171923-bcd7cc6bf64c
-	github.com/dop251/goja_nodejs v0.0.0-20250314160716-c55ecee183c0
+	github.com/dop251/goja v0.0.0-20250630131328-58d95d85e994
+	github.com/dop251/goja_nodejs v0.0.0-20250409162600-f7acab6894b0
 	github.com/fatih/color v1.18.0
-	github.com/fsnotify/fsnotify v1.7.0
-	github.com/gabriel-vasile/mimetype v1.4.8
+	github.com/fsnotify/fsnotify v1.9.0
+	github.com/gabriel-vasile/mimetype v1.4.10
 	github.com/ganigeorgiev/fexpr v0.5.0
 	github.com/go-ozzo/ozzo-validation/v4 v4.3.0
 	github.com/gofrs/uuid/v5 v5.3.2
-	github.com/golang-jwt/jwt/v5 v5.2.2
+	github.com/golang-jwt/jwt/v5 v5.3.0
+	github.com/jackc/pgx/v5 v5.7.6
 	github.com/joho/godotenv v1.5.1
-	github.com/lib/pq v1.10.9
-	github.com/oklog/ulid/v2 v2.1.0
+	github.com/oklog/ulid/v2 v2.1.1
 	github.com/pocketbase/dbx v1.11.0
-	github.com/pocketbase/tygoja v0.0.0-20250103200817-ca580d8c5119
-	github.com/spf13/cast v1.7.1
-	github.com/spf13/cobra v1.9.1
-	golang.org/x/crypto v0.37.0
-	golang.org/x/image v0.26.0
-	golang.org/x/net v0.39.0
-	golang.org/x/oauth2 v0.29.0
-	golang.org/x/sync v0.13.0
-	modernc.org/sqlite v1.37.0
+	github.com/pocketbase/tygoja v0.0.0-20250812183945-97ffe055281f
+	github.com/spf13/cast v1.10.0
+	github.com/spf13/cobra v1.10.1
+	golang.org/x/crypto v0.42.0
+	golang.org/x/image v0.31.0
+	golang.org/x/net v0.44.0
+	golang.org/x/oauth2 v0.31.0
+	golang.org/x/sync v0.17.0
+	modernc.org/sqlite v1.39.0
 )
 
 require (
@@ -35,20 +35,23 @@ require (
 	github.com/dop251/base64dec v0.0.0-20231022112746-c6c9f9a96217 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/go-sourcemap/sourcemap v2.1.4+incompatible // indirect
-	github.com/google/pprof v0.0.0-20250317173921-a4b03ec1a45e // indirect
+	github.com/google/pprof v0.0.0-20250923004556-9e5a51aed1e8 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
+	github.com/jackc/pgpassfile v1.0.0 // indirect
+	github.com/jackc/pgservicefile v0.0.0-20240606120523-5a60cdf6a761 // indirect
+	github.com/jackc/puddle/v2 v2.2.2 // indirect
 	github.com/mattn/go-colorable v0.1.14 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/ncruces/go-strftime v0.1.9 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec // indirect
-	github.com/spf13/pflag v1.0.6 // indirect
-	golang.org/x/exp v0.0.0-20250408133849-7e4ce0ab07d0 // indirect
-	golang.org/x/mod v0.24.0 // indirect
-	golang.org/x/sys v0.32.0 // indirect
-	golang.org/x/text v0.24.0 // indirect
-	golang.org/x/tools v0.32.0 // indirect
-	modernc.org/libc v1.62.1 // indirect
+	github.com/spf13/pflag v1.0.10 // indirect
+	golang.org/x/exp v0.0.0-20250911091902-df9299821621 // indirect
+	golang.org/x/mod v0.28.0 // indirect
+	golang.org/x/sys v0.36.0 // indirect
+	golang.org/x/text v0.29.0 // indirect
+	golang.org/x/tools v0.37.0 // indirect
+	modernc.org/libc v1.66.9 // indirect
 	modernc.org/mathutil v1.7.1 // indirect
-	modernc.org/memory v1.9.1 // indirect
+	modernc.org/memory v1.11.0 // indirect
 )

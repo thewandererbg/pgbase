@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	_ "github.com/lib/pq"
+	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/pocketbase/dbx"
 	"github.com/thewandererbg/pgbase/tools/list"
 	"github.com/thewandererbg/pgbase/tools/logger"
@@ -51,9 +51,9 @@ func TestBaseAppLoggerLevelDevPrint(t *testing.T) {
 				IsDev:   s.isDev,
 				DBConnect: func(dbPath string) (*dbx.DB, error) {
 					if strings.Contains(dbPath, "data.db") {
-						return dbx.Open("postgres", "postgres://postgres:postgrespassword@localhost:5432/pbdata?sslmode=disable")
+						return dbx.Open("pgx", "postgres://postgres:postgrespassword@localhost:5432/pbdata?sslmode=disable")
 					}
-					return dbx.Open("postgres", "postgres://postgres:postgrespassword@localhost:5432/pbaux?sslmode=disable")
+					return dbx.Open("pgx", "postgres://postgres:postgrespassword@localhost:5432/pbaux?sslmode=disable")
 				},
 			})
 			defer app.ResetBootstrapState()

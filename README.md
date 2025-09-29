@@ -23,8 +23,8 @@ GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o pgbase
 Set your database connection:
 
 ```bash
-export PB_DATA_URI="postgres://user:pass@localhost:5432/pbdata?sslmode=disable"
-export PB_AUX_URI="postgres://user:pass@localhost:5432/pbaux?sslmode=disable"
+export PB_DATA_URI="postgres://user:pass@localhost:5432/pbdata?sslmode=disable&default_query_exec_mode=simple_protocol"
+export PB_AUX_URI="postgres://user:pass@localhost:5432/pbaux?sslmode=disable&default_query_exec_mode=simple_protocol"
 ```
 
 ## Docker

@@ -7,8 +7,8 @@ import (
 	"path/filepath"
 	"strings"
 
+	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/joho/godotenv"
-	_ "github.com/lib/pq"
 	"github.com/pocketbase/dbx"
 	"github.com/thewandererbg/pgbase"
 	"github.com/thewandererbg/pgbase/apis"
@@ -33,9 +33,9 @@ func main() {
 		DefaultDev: false,
 		DBConnect: func(dbPath string) (*dbx.DB, error) {
 			if strings.Contains(dbPath, "data.db") {
-				return dbx.Open("postgres", os.Getenv("PB_DATA_URI"))
+				return dbx.Open("pgx", os.Getenv("PB_DATA_URI"))
 			}
-			return dbx.Open("postgres", os.Getenv("PB_AUX_URI"))
+			return dbx.Open("pgx", os.Getenv("PB_AUX_URI"))
 		},
 	})
 

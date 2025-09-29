@@ -17,7 +17,7 @@ import (
 
 	_ "github.com/thewandererbg/pgbase/migrations"
 
-	_ "github.com/lib/pq"
+	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
 // TestApp is a wrapper app instance used for testing.
@@ -53,14 +53,16 @@ func (t *TestApp) Cleanup() {
 		os.RemoveAll(t.DataDir())
 		dataDB := strings.ReplaceAll(t.DataDir(), "/tmp/", "")
 		auxDB := dataDB + "_aux"
-		dbURL := "postgres://postgres:postgrespassword@localhost:5432/pbdb?sslmode=disable"
+		dbURL := "postgres://postgres:postgrespassword@localhost:5432/pbdb?sslmode=disable&default_query_exec_mode=simple_protocol"
 
-		db, err := dbx.Open("postgres", dbURL)
+		db, err := dbx.Open("pgx", dbURL)
 		if err != nil {
 			log.Println("Error opening database:", err)
 			return
 		}
 		defer db.Close()
+
+		log.Println("Dropping database:", dataDB)
 		_, err = db.NewQuery("drop database if exists " + dataDB + ";").Execute()
 		if err != nil {
 			log.Println("Error dropping database:", err)
@@ -100,8 +102,8 @@ func NewTestApp(optTestDataDir ...string) (*TestApp, error) {
 		testDataDir = optTestDataDir[0]
 	}
 
-	dbURL := "postgres://postgres:postgrespassword@localhost:5432/pbdb?sslmode=disable"
-	db, err := dbx.Open("postgres", dbURL)
+	dbURL := "postgres://postgres:postgrespassword@localhost:5432/pbdb?sslmode=disable&default_query_exec_mode=simple_protocol"
+	db, err := dbx.Open("pgx", dbURL)
 	if err != nil {
 		return nil, err
 	}
@@ -131,9 +133,9 @@ func NewTestApp(optTestDataDir ...string) (*TestApp, error) {
 		EncryptionEnv: "pb_test_env",
 		DBConnect: func(dbPath string) (*dbx.DB, error) {
 			if strings.Contains(dbPath, "data.db") {
-				return dbx.Open("postgres", strings.Replace(dbURL, "pbdb", dataDB, 1))
+				return dbx.Open("pgx", strings.Replace(dbURL, "pbdb", dataDB, 1))
 			}
-			return dbx.Open("postgres", strings.Replace(dbURL, "pbdb", auxDB, 1))
+			return dbx.Open("pgx", strings.Replace(dbURL, "pbdb", auxDB, 1))
 		},
 	})
 }

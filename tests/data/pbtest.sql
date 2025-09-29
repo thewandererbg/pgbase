@@ -2,8 +2,10 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 17.4 (Debian 17.4-1.pgdg120+2)
--- Dumped by pg_dump version 17.4 (Debian 17.4-1.pgdg120+2)
+\restrict DF9FExrGxX28ulqgCixzacrQ7cMeRgfhhncVVTe3nMnYDCQnGraFW582JjwY1e5
+
+-- Dumped from database version 17.6 (Debian 17.6-1.pgdg13+1)
+-- Dumped by pg_dump version 17.6 (Debian 17.6-1.pgdg13+1)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -33,95 +35,23 @@ ALTER COLLATION public.nocase OWNER TO postgres;
 CREATE FUNCTION public.pb_json_array_length(input_data anyelement) RETURNS integer
     LANGUAGE plpgsql IMMUTABLE
     AS $$
-
-DECLARE
-
-    input_jsonb jsonb;
-
 BEGIN
-
-    -- NULL or empty input → 0
-
-    IF input_data IS NULL THEN
-
+    IF input_data IS NULL OR input_data::text = '' THEN
         RETURN 0;
-
     END IF;
-
-
-
-    -- Fast-path for jsonb and json types
 
     IF pg_typeof(input_data) = 'jsonb'::regtype THEN
-
-        IF jsonb_typeof(input_data::jsonb) = 'array' THEN
-
-            RETURN jsonb_array_length(input_data::jsonb);
-
-        ELSE
-
-            RETURN 0;
-
-        END IF;
-
-
-
+        RETURN pb_json_array_length(input_data::jsonb);
     ELSIF pg_typeof(input_data) = 'json'::regtype THEN
-
-        IF json_typeof(input_data::json) = 'array' THEN
-
-            RETURN json_array_length(input_data::json);
-
-        ELSE
-
+        RETURN pb_json_array_length(input_data::jsonb);
+    ELSE
+        BEGIN
+            RETURN pb_json_array_length(input_data::text::jsonb);
+        EXCEPTION WHEN others THEN
             RETURN 0;
-
-        END IF;
-
+        END;
     END IF;
-
-
-
-    -- Other types → try to parse as JSON
-
-    BEGIN
-
-        -- Avoid empty string parsing
-
-        IF input_data::text IS NULL OR input_data::text = '' THEN
-
-            RETURN 0;
-
-        END IF;
-
-
-
-        input_jsonb := input_data::text::jsonb;
-
-
-
-        IF jsonb_typeof(input_jsonb) = 'array' THEN
-
-            RETURN jsonb_array_length(input_jsonb);
-
-        ELSE
-
-            RETURN 0;
-
-        END IF;
-
-
-
-    EXCEPTION WHEN others THEN
-
-        -- If not valid JSON → 0
-
-        RETURN 0;
-
-    END;
-
 END;
-
 $$;
 
 
@@ -137,85 +67,79 @@ Handles various input formats including native JSON/JSONB types and JSON string 
 
 
 --
+-- Name: pb_json_array_length(jsonb); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.pb_json_array_length(input_data jsonb) RETURNS integer
+    LANGUAGE sql IMMUTABLE
+    AS $$
+    SELECT CASE
+        WHEN input_data IS NULL THEN 0
+        WHEN jsonb_typeof(input_data) = 'array' THEN jsonb_array_length(input_data)
+        ELSE 0
+    END;
+$$;
+
+
+ALTER FUNCTION public.pb_json_array_length(input_data jsonb) OWNER TO postgres;
+
+--
 -- Name: pb_json_each(anyelement); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
 CREATE FUNCTION public.pb_json_each(input_data anyelement) RETURNS TABLE(value text)
     LANGUAGE plpgsql IMMUTABLE
     AS $$
-
-DECLARE
-
-    json_data jsonb;
-
 BEGIN
-
     IF input_data IS NULL THEN
-
         RETURN;
-
     END IF;
 
-
-
-    IF pg_typeof(input_data) IN ('json'::regtype, 'jsonb'::regtype) THEN
-
-        json_data := input_data::jsonb;
-
+    IF pg_typeof(input_data) = 'jsonb'::regtype THEN
+        RETURN QUERY SELECT * FROM pb_json_each(input_data::jsonb);
+    ELSIF pg_typeof(input_data) = 'json'::regtype THEN
+        RETURN QUERY SELECT * FROM pb_json_each(input_data::jsonb);
     ELSE
-
         BEGIN
-
-            json_data := input_data::text::jsonb;
-
+            RETURN QUERY SELECT * FROM pb_json_each(input_data::text::jsonb);
         EXCEPTION WHEN others THEN
-
             RETURN QUERY SELECT input_data::text;
-
-            RETURN;
-
         END;
-
     END IF;
-
-
-
-    CASE jsonb_typeof(json_data)
-
-        WHEN 'array' THEN
-
-            RETURN QUERY
-
-            SELECT elem
-
-            FROM jsonb_array_elements_text(json_data) AS t(elem);
-
-
-
-        WHEN 'object' THEN
-
-            RETURN QUERY
-
-            SELECT val
-
-            FROM jsonb_each_text(json_data) AS t(key, val);
-
-
-
-        ELSE
-
-            RETURN QUERY
-
-            SELECT trim(both '"' from json_data::text);
-
-    END CASE;
-
 END;
-
 $$;
 
 
 ALTER FUNCTION public.pb_json_each(input_data anyelement) OWNER TO postgres;
+
+--
+-- Name: pb_json_each(jsonb); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.pb_json_each(input_data jsonb) RETURNS TABLE(value text)
+    LANGUAGE plpgsql IMMUTABLE
+    AS $$
+DECLARE
+    json_type text;
+BEGIN
+    IF input_data IS NULL THEN
+        RETURN;
+    END IF;
+
+    json_type := jsonb_typeof(input_data);
+
+    IF json_type = 'array' THEN
+        RETURN QUERY SELECT jsonb_array_elements_text(input_data);
+    ELSIF json_type = 'object' THEN
+        RETURN QUERY SELECT v::text FROM jsonb_each(input_data) AS t(k, v);
+    ELSE
+        RETURN QUERY SELECT trim(both '"' from input_data::text);
+    END IF;
+END;
+$$;
+
+
+ALTER FUNCTION public.pb_json_each(input_data jsonb) OWNER TO postgres;
 
 --
 -- Name: pb_json_extract(anyelement, text); Type: FUNCTION; Schema: public; Owner: postgres
@@ -224,77 +148,23 @@ ALTER FUNCTION public.pb_json_each(input_data anyelement) OWNER TO postgres;
 CREATE FUNCTION public.pb_json_extract(data anyelement, path text) RETURNS text
     LANGUAGE plpgsql IMMUTABLE
     AS $$
-
-DECLARE
-
-    input_jsonb jsonb;
-
-    json_path jsonpath;
-
-    result text;
-
 BEGIN
-
     IF data IS NULL OR path IS NULL THEN
-
         RETURN NULL;
-
     END IF;
 
-
-
-    BEGIN
-
-        json_path := path::jsonpath;
-
-    EXCEPTION
-
-        WHEN others THEN
-
-            RETURN NULL;
-
-    END;
-
-
-
-    IF pg_typeof(data) IN ('jsonb'::regtype, 'json'::regtype) THEN
-
-        input_jsonb := data::jsonb;
-
+    IF pg_typeof(data) = 'jsonb'::regtype THEN
+        RETURN pb_json_extract(data::jsonb, path);
+    ELSIF pg_typeof(data) = 'json'::regtype THEN
+        RETURN pb_json_extract(data::jsonb, path);
     ELSE
-
         BEGIN
-
-            input_jsonb := data::text::jsonb;
-
-        EXCEPTION
-
-            WHEN others THEN
-
-                RETURN data::text;
-
+            RETURN pb_json_extract(data::text::jsonb, path);
+        EXCEPTION WHEN others THEN
+            RETURN data::text;
         END;
-
     END IF;
-
-
-
-    BEGIN
-
-        result := jsonb_path_query_first(input_jsonb, json_path) #>> '{}';
-
-        RETURN result;
-
-    EXCEPTION
-
-        WHEN others THEN
-
-            RETURN NULL;
-
-    END;
-
 END;
-
 $$;
 
 
@@ -312,6 +182,29 @@ COMMENT ON FUNCTION public.pb_json_extract(data anyelement, path text) IS 'Extra
 
 		For non-JSON inputs, attempts to convert to JSON or returns the input as text.';
 
+
+--
+-- Name: pb_json_extract(jsonb, text); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.pb_json_extract(data jsonb, path text) RETURNS text
+    LANGUAGE plpgsql IMMUTABLE
+    AS $$
+BEGIN
+    IF data IS NULL OR path IS NULL THEN
+        RETURN NULL;
+    END IF;
+
+    BEGIN
+        RETURN jsonb_path_query_first(data, path::jsonpath) #>> '{}';
+    EXCEPTION WHEN others THEN
+        RETURN NULL;
+    END;
+END;
+$$;
+
+
+ALTER FUNCTION public.pb_json_extract(data jsonb, path text) OWNER TO postgres;
 
 SET default_tablespace = '';
 
@@ -1208,4 +1101,6 @@ CREATE UNIQUE INDEX idx_unique_demo2_title ON public.demo2 USING btree (title);
 --
 -- PostgreSQL database dump complete
 --
+
+\unrestrict DF9FExrGxX28ulqgCixzacrQ7cMeRgfhhncVVTe3nMnYDCQnGraFW582JjwY1e5
 

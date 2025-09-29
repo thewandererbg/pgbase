@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	_ "github.com/lib/pq"
+	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/pocketbase/dbx"
 	"github.com/thewandererbg/pgbase/tools/search"
 )
@@ -183,7 +183,7 @@ func TestFilterDataBuildExpr(t *testing.T) {
 func TestFilterDataBuildExprWithParams(t *testing.T) {
 	// create a dummy db
 	dbURL := "postgres://postgres:postgrespassword@localhost:5432/pbdb?sslmode=disable"
-	db, err := dbx.Open("postgres", dbURL)
+	db, err := dbx.Open("pgx", dbURL)
 
 	calledQueries := []string{}
 	db.QueryLogFunc = func(ctx context.Context, t time.Duration, sql string, rows *sql.Rows, err error) {
@@ -276,7 +276,7 @@ func TestFilterDataBuildExprWithLimit(t *testing.T) {
 func TestLikeParamsWrapping(t *testing.T) {
 	// create a dummy db
 	dbURL := "postgres://postgres:postgrespassword@localhost:5432/pbdb?sslmode=disable"
-	db, err := dbx.Open("postgres", dbURL)
+	db, err := dbx.Open("pgx", dbURL)
 	if err != nil {
 		t.Fatal(err)
 	}

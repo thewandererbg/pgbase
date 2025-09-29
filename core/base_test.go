@@ -17,7 +17,7 @@ import (
 	"github.com/thewandererbg/pgbase/tools/logger"
 	"github.com/thewandererbg/pgbase/tools/mailer"
 
-	_ "github.com/lib/pq"
+	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
 func TestNewBaseApp(t *testing.T) {
@@ -33,9 +33,9 @@ func TestNewBaseApp(t *testing.T) {
 		IsDev:         true,
 		DBConnect: func(dbPath string) (*dbx.DB, error) {
 			if strings.Contains(dbPath, "data.db") {
-				return dbx.Open("postgres", "postgres://postgres:postgrespassword@localhost:5432/"+dataDB+"?sslmode=disable")
+				return dbx.Open("pgx", "postgres://postgres:postgrespassword@localhost:5432/"+dataDB+"?sslmode=disable")
 			}
-			return dbx.Open("postgres", "postgres://postgres:postgrespassword@localhost:5432/"+auxDB+"?sslmode=disable")
+			return dbx.Open("pgx", "postgres://postgres:postgrespassword@localhost:5432/"+auxDB+"?sslmode=disable")
 		},
 	})
 
@@ -75,9 +75,9 @@ func TestBaseAppBootstrap(t *testing.T) {
 		DataDir: testDataDir,
 		DBConnect: func(dbPath string) (*dbx.DB, error) {
 			if strings.Contains(dbPath, "data.db") {
-				return dbx.Open("postgres", "postgres://postgres:postgrespassword@localhost:5432/"+dataDB+"?sslmode=disable")
+				return dbx.Open("pgx", "postgres://postgres:postgrespassword@localhost:5432/"+dataDB+"?sslmode=disable")
 			}
-			return dbx.Open("postgres", "postgres://postgres:postgrespassword@localhost:5432/"+auxDB+"?sslmode=disable")
+			return dbx.Open("pgx", "postgres://postgres:postgrespassword@localhost:5432/"+auxDB+"?sslmode=disable")
 		},
 	})
 	defer app.ResetBootstrapState()
@@ -156,9 +156,9 @@ func TestNewBaseAppIsTransactional(t *testing.T) {
 		DataDir: testDataDir,
 		DBConnect: func(dbPath string) (*dbx.DB, error) {
 			if strings.Contains(dbPath, "data.db") {
-				return dbx.Open("postgres", "postgres://postgres:postgrespassword@localhost:5432/"+dataDB+"?sslmode=disable")
+				return dbx.Open("pgx", "postgres://postgres:postgrespassword@localhost:5432/"+dataDB+"?sslmode=disable")
 			}
-			return dbx.Open("postgres", "postgres://postgres:postgrespassword@localhost:5432/"+auxDB+"?sslmode=disable")
+			return dbx.Open("pgx", "postgres://postgres:postgrespassword@localhost:5432/"+auxDB+"?sslmode=disable")
 		},
 	})
 	defer app.ResetBootstrapState()
@@ -192,9 +192,9 @@ func TestBaseAppNewMailClient(t *testing.T) {
 		EncryptionEnv: "pb_test_env",
 		DBConnect: func(dbPath string) (*dbx.DB, error) {
 			if strings.Contains(dbPath, "data.db") {
-				return dbx.Open("postgres", "postgres://postgres:postgrespassword@localhost:5432/"+dataDB+"?sslmode=disable")
+				return dbx.Open("pgx", "postgres://postgres:postgrespassword@localhost:5432/"+dataDB+"?sslmode=disable")
 			}
-			return dbx.Open("postgres", "postgres://postgres:postgrespassword@localhost:5432/"+auxDB+"?sslmode=disable")
+			return dbx.Open("pgx", "postgres://postgres:postgrespassword@localhost:5432/"+auxDB+"?sslmode=disable")
 		},
 	})
 	defer app.ResetBootstrapState()
@@ -231,9 +231,9 @@ func TestBaseAppNewFilesystem(t *testing.T) {
 		DataDir: testDataDir,
 		DBConnect: func(dbPath string) (*dbx.DB, error) {
 			if strings.Contains(dbPath, "data.db") {
-				return dbx.Open("postgres", "postgres://postgres:postgrespassword@localhost:5432/"+dataDB+"?sslmode=disable")
+				return dbx.Open("pgx", "postgres://postgres:postgrespassword@localhost:5432/"+dataDB+"?sslmode=disable")
 			}
-			return dbx.Open("postgres", "postgres://postgres:postgrespassword@localhost:5432/"+auxDB+"?sslmode=disable")
+			return dbx.Open("pgx", "postgres://postgres:postgrespassword@localhost:5432/"+auxDB+"?sslmode=disable")
 		},
 	})
 	defer app.ResetBootstrapState()
@@ -269,9 +269,9 @@ func TestBaseAppNewBackupsFilesystem(t *testing.T) {
 		DataDir: testDataDir,
 		DBConnect: func(dbPath string) (*dbx.DB, error) {
 			if strings.Contains(dbPath, "data.db") {
-				return dbx.Open("postgres", "postgres://postgres:postgrespassword@localhost:5432/"+dataDB+"?sslmode=disable")
+				return dbx.Open("pgx", "postgres://postgres:postgrespassword@localhost:5432/"+dataDB+"?sslmode=disable")
 			}
-			return dbx.Open("postgres", "postgres://postgres:postgrespassword@localhost:5432/"+auxDB+"?sslmode=disable")
+			return dbx.Open("pgx", "postgres://postgres:postgrespassword@localhost:5432/"+auxDB+"?sslmode=disable")
 		},
 	})
 	defer app.ResetBootstrapState()
@@ -404,9 +404,9 @@ func TestBaseAppRefreshSettingsLoggerMinLevelEnabled(t *testing.T) {
 				IsDev:   s.isDev,
 				DBConnect: func(dbPath string) (*dbx.DB, error) {
 					if strings.Contains(dbPath, "data.db") {
-						return dbx.Open("postgres", "postgres://postgres:postgrespassword@localhost:5432/"+dataDB+"?sslmode=disable")
+						return dbx.Open("pgx", "postgres://postgres:postgrespassword@localhost:5432/"+dataDB+"?sslmode=disable")
 					}
-					return dbx.Open("postgres", "postgres://postgres:postgrespassword@localhost:5432/"+auxDB+"?sslmode=disable")
+					return dbx.Open("pgx", "postgres://postgres:postgrespassword@localhost:5432/"+auxDB+"?sslmode=disable")
 				},
 			})
 			defer app.ResetBootstrapState()
@@ -444,7 +444,7 @@ func TestBaseAppRefreshSettingsLoggerMinLevelEnabled(t *testing.T) {
 func generateRandomDB(t *testing.T) (string, string, *dbx.DB) {
 	dataDB := "db_" + core.GenerateDefaultRandomId()[0:5]
 	auxDB := dataDB + "_aux"
-	db, err := dbx.Open("postgres", "postgres://postgres:postgrespassword@localhost:5432/pbdb?sslmode=disable")
+	db, err := dbx.Open("pgx", "postgres://postgres:postgrespassword@localhost:5432/pbdb?sslmode=disable")
 	if err != nil {
 		t.Fatalf("failed to open database connection: %v", err)
 	}

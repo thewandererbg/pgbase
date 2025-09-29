@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
-	"github.com/lib/pq"
+	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/pocketbase/dbx"
 )
 
@@ -57,18 +57,18 @@ func NormalizeUniqueIndexError(err error, tableOrAlias string, fieldNames []stri
 		return err
 	}
 
-	// Try to cast to a pq Error
-	pqErr, isPqError := err.(*pq.Error)
+	// Try to cast to a pgx Error
+	pgxErr, isPgxError := err.(*pgconn.PgError)
 
-	// If it's a pq error and it's a unique violation
-	if isPqError && pqErr.Code == "23505" { // code for unique violation
+	// If it's a pgx error and it's a unique violation
+	if isPgxError && pgxErr.Code == "23505" { // code for unique violation
 		normalizedErrs := validation.Errors{}
 
-		if pqErr.Table != tableOrAlias {
+		if pgxErr.TableName != tableOrAlias {
 			return err
 		}
 
-		uniqueKeys := strings.Split(strings.TrimSpace(regexp.MustCompile(`Key \((.*?)\)=`).FindStringSubmatch(pqErr.Detail)[1]), ",")
+		uniqueKeys := strings.Split(strings.TrimSpace(regexp.MustCompile(`Key \((.*?)\)=`).FindStringSubmatch(pgxErr.Detail)[1]), ",")
 
 		for _, key := range uniqueKeys {
 			if slices.Contains(fieldNames, key) {

@@ -2,8 +2,10 @@ package types
 
 import (
 	"database/sql/driver"
+	"encoding/hex"
 	"encoding/json"
 	"errors"
+	"strings"
 )
 
 // JSONRaw defines a json value type that is safe for db read/write.
@@ -67,6 +69,13 @@ func (j *JSONRaw) Scan(value any) error {
 	case string:
 		if v != "" {
 			data = []byte(v)
+
+			// If it's not valid JSON, try hex decoding
+			if !json.Valid(data) && strings.HasPrefix(v, "\\x") {
+				if decoded, err := hex.DecodeString(v[2:]); err == nil && json.Valid(decoded) {
+					data = decoded
+				}
+			}
 		}
 	case JSONRaw:
 		if len(v) != 0 {

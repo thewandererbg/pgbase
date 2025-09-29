@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
-	"github.com/lib/pq"
+	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/thewandererbg/pgbase/core/validators"
 	"github.com/thewandererbg/pgbase/tests"
 )
@@ -74,10 +74,10 @@ func TestNormalizeUniqueIndexError(t *testing.T) {
 		},
 		{
 			"unique index error but mismatched table name",
-			&pq.Error{
-				Code:   "23505",
-				Detail: "Key (a,b)=(test1,test2) already exists.",
-				Table:  "test",
+			&pgconn.PgError{
+				Code:      "23505",
+				Detail:    "Key (a,b)=(test1,test2) already exists.",
+				TableName: "test",
 			},
 			"example",
 			[]string{"a", "b"},
@@ -85,10 +85,10 @@ func TestNormalizeUniqueIndexError(t *testing.T) {
 		},
 		{
 			"unique index error with table name suffix matching the specified one",
-			&pq.Error{
-				Code:   "23505",
-				Detail: "Key (a,b)=(test1,test2) already exists.",
-				Table:  "test_suffix",
+			&pgconn.PgError{
+				Code:      "23505",
+				Detail:    "Key (a,b)=(test1,test2) already exists.",
+				TableName: "test_suffix",
 			},
 			"suffix",
 			[]string{"a", "b", "c"},
@@ -96,10 +96,10 @@ func TestNormalizeUniqueIndexError(t *testing.T) {
 		},
 		{
 			"unique index error but mismatched fields",
-			&pq.Error{
-				Code:   "23505",
-				Detail: "Key (a,b)=(test1,test2) already exists.",
-				Table:  "test",
+			&pgconn.PgError{
+				Code:      "23505",
+				Detail:    "Key (a,b)=(test1,test2) already exists.",
+				TableName: "test",
 			},
 			"test",
 			[]string{"c", "d"},
@@ -107,10 +107,10 @@ func TestNormalizeUniqueIndexError(t *testing.T) {
 		},
 		{
 			"unique index error with matching table name and fields",
-			&pq.Error{
-				Code:   "23505",
-				Detail: "Key (a,b)=(test1,test2) already exists.",
-				Table:  "test",
+			&pgconn.PgError{
+				Code:      "23505",
+				Detail:    "Key (a,b)=(test1,test2) already exists.",
+				TableName: "test",
 			},
 			"test",
 			[]string{"a", "b", "c"},
@@ -118,10 +118,10 @@ func TestNormalizeUniqueIndexError(t *testing.T) {
 		},
 		{
 			"unique index error with matching table name and field starting with the name of another non-unique field",
-			&pq.Error{
-				Code:   "23505",
-				Detail: "Key (a_2,c)=(test1,test2) already exists.",
-				Table:  "test",
+			&pgconn.PgError{
+				Code:      "23505",
+				Detail:    "Key (a_2,c)=(test1,test2) already exists.",
+				TableName: "test",
 			},
 			"test",
 			[]string{"a", "a_2", "c"},
