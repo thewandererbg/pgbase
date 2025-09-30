@@ -60,18 +60,18 @@ func registerPostgresFunctions(txApp core.App) error {
 		    END;
 		$$;
 
-		CREATE OR REPLACE FUNCTION public.pb_json_extract(data jsonb, path text)
+		CREATE OR REPLACE FUNCTION public.pb_json_extract(input_data jsonb, path text)
 		    RETURNS text
 		    IMMUTABLE
 		    LANGUAGE plpgsql
 		AS $$
 		BEGIN
-		    IF data IS NULL OR path IS NULL THEN
+		    IF input_data IS NULL OR path IS NULL THEN
 		        RETURN NULL;
 		    END IF;
 
 		    BEGIN
-		        RETURN jsonb_path_query_first(data, path::jsonpath) #>> '{}';
+		        RETURN jsonb_path_query_first(input_data, path::jsonpath) #>> '{}';
 		    EXCEPTION WHEN others THEN
 		        RETURN NULL;
 		    END;
@@ -159,6 +159,9 @@ func unregisterPostgresFunctions(txApp core.App) error {
 		drop function if exists public.pb_json_extract(anyelement, text);
 		drop function if exists public.pb_json_array_length(anyelement, text);
 		drop function if exists public.pb_json_each(anyelement, text);
+		drop function if exists public.pb_json_extract(jsonb, text);
+		drop function if exists public.pb_json_array_length(jsonb, text);
+		drop function if exists public.pb_json_each(jsonb, text);
 	`).Execute()
 
 	return execErr

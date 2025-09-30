@@ -108,7 +108,7 @@ func createParamsTable(txApp core.App) error {
 	_, execErr := txApp.DB().NewQuery(`
 		CREATE TABLE {{_params}} (
 			[[id]]      TEXT PRIMARY KEY DEFAULT length(substr(md5(random()::text), 1, 15)) NOT NULL,
-			[[value]]   JSONB DEFAULT NULL,
+			[[value]]   TEXT DEFAULT NULL,
 			[[created]] TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
 			[[updated]] TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL
 		);
