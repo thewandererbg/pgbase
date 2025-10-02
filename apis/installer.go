@@ -20,7 +20,7 @@ import (
 // token for the systemSuperuser) to the installer UI so that users can
 // create their own custom superuser record.
 //
-// See https://github.com/thewandererbg/pgbase/discussions/5814.
+// See https://github.com/pocketbase/pocketbase/discussions/5814.
 func DefaultInstallerFunc(app core.App, systemSuperuser *core.Record, baseURL string) error {
 	token, err := systemSuperuser.NewStaticAuthToken(30 * time.Minute)
 	if err != nil {
@@ -32,7 +32,7 @@ func DefaultInstallerFunc(app core.App, systemSuperuser *core.Record, baseURL st
 	_ = osutils.LaunchURL(url)
 	color.Magenta("\n(!) Launch the URL below in the browser if it hasn't been open already to create your first superuser account:")
 	color.New(color.Bold).Add(color.FgCyan).Println(url)
-	color.New(color.FgHiBlack, color.Italic).Printf("(you can also create your first superuser by running: %s superuser upsert EMAIL PASS)\n\n", os.Args[0])
+	color.New(color.FgHiBlack, color.Italic).Printf("(you can also create your first superuser by running: %s superuser upsert EMAIL PASS)\n\n", executablePath())
 
 	return nil
 }
@@ -85,4 +85,12 @@ func findOrCreateInstallerSuperuser(app core.App) (*core.Record, error) {
 	}
 
 	return record, nil
+}
+
+func executablePath() string {
+	if osutils.IsProbablyGoRun() {
+		return "go run ."
+	}
+
+	return os.Args[0]
 }

@@ -1114,27 +1114,17 @@ func (app *BaseApp) initDataDB() error {
 	concurrentDB.DB().SetMaxIdleConns(app.config.DataMaxIdleConns)
 	concurrentDB.DB().SetConnMaxIdleTime(3 * time.Minute)
 
-	nonconcurrentDB, err := app.config.DBConnect(dbPath)
-	if err != nil {
-		return err
-	}
-	nonconcurrentDB.DB().SetMaxOpenConns(1)
-	nonconcurrentDB.DB().SetMaxIdleConns(1)
-	nonconcurrentDB.DB().SetConnMaxIdleTime(3 * time.Minute)
-
 	if app.IsDev() {
-		nonconcurrentDB.QueryLogFunc = func(ctx context.Context, t time.Duration, sql string, rows *sql.Rows, err error) {
+		concurrentDB.QueryLogFunc = func(ctx context.Context, t time.Duration, sql string, rows *sql.Rows, err error) {
 			color.HiBlack("[%.2fms] %v\n", float64(t.Milliseconds()), normalizeSQLLog(sql))
 		}
-		nonconcurrentDB.ExecLogFunc = func(ctx context.Context, t time.Duration, sql string, result sql.Result, err error) {
+		concurrentDB.ExecLogFunc = func(ctx context.Context, t time.Duration, sql string, result sql.Result, err error) {
 			color.HiBlack("[%.2fms] %v\n", float64(t.Milliseconds()), normalizeSQLLog(sql))
 		}
-		concurrentDB.QueryLogFunc = nonconcurrentDB.QueryLogFunc
-		concurrentDB.ExecLogFunc = nonconcurrentDB.ExecLogFunc
 	}
 
 	app.concurrentDB = concurrentDB
-	app.nonconcurrentDB = nonconcurrentDB
+	app.nonconcurrentDB = concurrentDB // postgresql does not need nonconcurrentDB
 
 	return nil
 }
@@ -1164,8 +1154,6 @@ func normalizeSQLLog(sql string) string {
 }
 
 func (app *BaseApp) initAuxDB() error {
-	// note: renamed to "auxiliary" because "aux" is a reserved Windows filename
-	// (see https://github.com/thewandererbg/pgbase/issues/5607)
 	dbPath := filepath.Join(app.DataDir(), "auxiliary.db")
 
 	concurrentDB, err := app.config.DBConnect(dbPath)
@@ -1176,16 +1164,8 @@ func (app *BaseApp) initAuxDB() error {
 	concurrentDB.DB().SetMaxIdleConns(app.config.AuxMaxIdleConns)
 	concurrentDB.DB().SetConnMaxIdleTime(3 * time.Minute)
 
-	nonconcurrentDB, err := app.config.DBConnect(dbPath)
-	if err != nil {
-		return err
-	}
-	nonconcurrentDB.DB().SetMaxOpenConns(1)
-	nonconcurrentDB.DB().SetMaxIdleConns(1)
-	nonconcurrentDB.DB().SetConnMaxIdleTime(3 * time.Minute)
-
 	app.auxConcurrentDB = concurrentDB
-	app.auxNonconcurrentDB = nonconcurrentDB
+	app.auxNonconcurrentDB = concurrentDB // postgresql does not need nonconcurrentDB
 
 	return nil
 }

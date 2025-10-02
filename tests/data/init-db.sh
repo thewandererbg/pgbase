@@ -21,8 +21,6 @@ else
   echo "Database pbtest already exists. Skipping creation."
 fi
 
-# Create backups folders if it is not available
-
 # Restore the dump into pbtest
 if [ -s /backups/pbtest.dump ]; then
   echo "Restoring pbtest.dump into pbtest..."
@@ -30,14 +28,5 @@ if [ -s /backups/pbtest.dump ]; then
 else
   echo "pbtest.dump not found or empty. Skipping restore."
 fi
-
-# # Restore the dump into pbtest
-# if [ -s /backups/pbtest.sql ]; then
-#   echo "Restoring pbtest.sql into pbtest..."
-#   psql -U "$POSTGRES_USER" -d pbtest -f /backups/pbtest.sql
-# else
-#   echo "pbtest.sql not found or empty. Skipping restore."
-# fi
-
 
 echo "Init script finished."

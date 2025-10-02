@@ -28,7 +28,7 @@ const (
 
 const systemHookIdCollection = "__pbCollectionSystemHook__"
 
-const defaultLowercaseRecordIdPattern = "^[a-z0-9]+$"
+const defaultLowercaseRecordIdPattern = `^[\w]+$`
 
 func (app *BaseApp) registerCollectionHooks() {
 	app.OnModelValidate().Bind(&hook.Handler[*ModelEvent]{
@@ -920,19 +920,20 @@ func (c *Collection) initDefaultFields() {
 	}
 }
 
+// Init id as ulid with prefix
+// https://dev.to/stripe/designing-apis-for-humans-object-ids-3o5a
 func (c *Collection) initIdField() {
 	field, _ := c.Fields.GetByName(FieldNameId).(*TextField)
 	if field == nil {
-		// create default field
 		field = &TextField{
 			Name:                FieldNameId,
 			System:              true,
 			PrimaryKey:          true,
 			Required:            true,
 			Min:                 15,
-			Max:                 15,
+			Max:                 36,
 			Pattern:             defaultLowercaseRecordIdPattern,
-			AutogeneratePattern: `[a-z0-9]{15}`,
+			AutogeneratePattern: `gen:ulid`,
 		}
 
 		// prepend it

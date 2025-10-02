@@ -13,9 +13,8 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/thewandererbg/pgbase/cmd"
 	"github.com/thewandererbg/pgbase/core"
-	"github.com/thewandererbg/pgbase/tools/hook"
 	"github.com/thewandererbg/pgbase/tools/list"
-	"github.com/thewandererbg/pgbase/tools/routine"
+	"github.com/thewandererbg/pgbase/tools/osutils"
 
 	_ "github.com/thewandererbg/pgbase/migrations"
 )
@@ -138,24 +137,6 @@ func NewWithConfig(config Config) *PocketBase {
 
 	// hide the default help command (allow only `--help` flag)
 	pb.RootCmd.SetHelpCommand(&cobra.Command{Hidden: true})
-
-	// https://github.com/thewandererbg/pgbase/issues/6136
-	pb.OnBootstrap().Bind(&hook.Handler[*core.BootstrapEvent]{
-		Id: ModerncDepsCheckHookId,
-		Func: func(be *core.BootstrapEvent) error {
-			if err := be.Next(); err != nil {
-				return err
-			}
-
-			// run separately to avoid blocking
-			app := be.App
-			routine.FireAndForget(func() {
-				checkModerncDeps(app)
-			})
-
-			return nil
-		},
-	})
 
 	return pb
 }
@@ -293,7 +274,7 @@ func (pb *PocketBase) skipBootstrap() bool {
 // note: we are using os.Args[0] and not os.Executable() since it could
 // break existing aliased binaries (eg. the community maintained homebrew package)
 func inspectRuntime() (baseDir string, withGoRun bool) {
-	if strings.HasPrefix(os.Args[0], os.TempDir()) {
+	if osutils.IsProbablyGoRun() {
 		// probably ran with go run
 		withGoRun = true
 		baseDir, _ = os.Getwd()

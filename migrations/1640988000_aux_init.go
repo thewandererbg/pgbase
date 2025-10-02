@@ -24,152 +24,133 @@ func init() {
 
 				CREATE COLLATION IF NOT EXISTS nocase (provider = icu, locale = 'und-u-ks-level1', deterministic = false);
 
-				create or replace function public.pb_json_each(input_data anyelement)
-				    returns TABLE(value text)
-				    immutable
-				    language plpgsql
-				as
-				$$
+				CREATE OR REPLACE FUNCTION public.pb_json_each(input_data jsonb)
+				    RETURNS TABLE(value text)
+				    IMMUTABLE
+				    LANGUAGE plpgsql
+				AS $$
 				DECLARE
-				    json_data jsonb;
+				    json_type text;
 				BEGIN
 				    IF input_data IS NULL THEN
 				        RETURN;
 				    END IF;
 
-				    IF pg_typeof(input_data) IN ('json'::regtype, 'jsonb'::regtype) THEN
-				        json_data := input_data::jsonb;
+				    json_type := jsonb_typeof(input_data);
+
+				    IF json_type = 'array' THEN
+				        RETURN QUERY SELECT jsonb_array_elements_text(input_data);
+				    ELSIF json_type = 'object' THEN
+				        RETURN QUERY SELECT val FROM jsonb_each_text(input_data) AS t(key, val);
 				    ELSE
-				        BEGIN
-				            json_data := input_data::text::jsonb;
-				        EXCEPTION WHEN others THEN
-				            RETURN QUERY SELECT input_data::text;
-				            RETURN;
-				        END;
+				        RETURN QUERY SELECT trim(both '"' from input_data::text);
 				    END IF;
-
-				    CASE jsonb_typeof(json_data)
-				        WHEN 'array' THEN
-				            RETURN QUERY
-				            SELECT elem
-				            FROM jsonb_array_elements_text(json_data) AS t(elem);
-
-				        WHEN 'object' THEN
-				            RETURN QUERY
-				            SELECT val
-				            FROM jsonb_each_text(json_data) AS t(key, val);
-
-				        ELSE
-				            RETURN QUERY
-				            SELECT trim(both '"' from json_data::text);
-				    END CASE;
 				END;
 				$$;
 
-				comment on function public.pb_json_each(anyelement) is 'Extracts values from JSON data and returns them as rows. Handles JSON arrays, objects, primitive values, and non-JSON inputs. Returns a table with a single text column "value".';
+				CREATE OR REPLACE FUNCTION public.pb_json_array_length(input_data jsonb)
+				    RETURNS integer
+				    IMMUTABLE
+				    LANGUAGE sql
+				AS $$
+				    SELECT CASE
+				        WHEN input_data IS NULL THEN 0
+				        WHEN jsonb_typeof(input_data) = 'array' THEN jsonb_array_length(input_data)
+				        ELSE 0
+				    END;
+				$$;
 
-				create or replace function public.pb_json_array_length(input_data anyelement) returns integer
-				    immutable
-				    language plpgsql
-				as
-				$$
-				DECLARE
-				    input_jsonb jsonb;
+				CREATE OR REPLACE FUNCTION public.pb_json_extract(input_data jsonb, path text)
+				    RETURNS text
+				    IMMUTABLE
+				    LANGUAGE plpgsql
+				AS $$
 				BEGIN
-				    -- NULL or empty input → 0
-				    IF input_data IS NULL THEN
-				        RETURN 0;
+				    IF input_data IS NULL OR path IS NULL THEN
+				        RETURN NULL;
 				    END IF;
 
-				    -- Fast-path for jsonb and json types
-				    IF pg_typeof(input_data) = 'jsonb'::regtype THEN
-				        IF jsonb_typeof(input_data::jsonb) = 'array' THEN
-				            RETURN jsonb_array_length(input_data::jsonb);
-				        ELSE
-				            RETURN 0;
-				        END IF;
-
-				    ELSIF pg_typeof(input_data) = 'json'::regtype THEN
-				        IF json_typeof(input_data::json) = 'array' THEN
-				            RETURN json_array_length(input_data::json);
-				        ELSE
-				            RETURN 0;
-				        END IF;
-				    END IF;
-
-				    -- Other types → try to parse as JSON
 				    BEGIN
-				        -- Avoid empty string parsing
-				        IF input_data::text IS NULL OR input_data::text = '' THEN
-				            RETURN 0;
-				        END IF;
-
-				        input_jsonb := input_data::text::jsonb;
-
-				        IF jsonb_typeof(input_jsonb) = 'array' THEN
-				            RETURN jsonb_array_length(input_jsonb);
-				        ELSE
-				            RETURN 0;
-				        END IF;
-
+				        RETURN jsonb_path_query_first(input_data, path::jsonpath) #>> '{}';
 				    EXCEPTION WHEN others THEN
-				        -- If not valid JSON → 0
-				        RETURN 0;
+				        RETURN NULL;
 				    END;
 				END;
 				$$;
 
-				comment on function public.pb_json_array_length(anyelement) is 'Returns the length of a JSON array. Returns 0 for non-arrays, NULL values, empty strings, or invalid JSON.
-								Handles various input formats including native JSON/JSONB types and JSON string literals.';
+				CREATE OR REPLACE FUNCTION public.pb_json_each(input_data anyelement)
+				    RETURNS TABLE(value text)
+				    IMMUTABLE
+				    LANGUAGE plpgsql
+				AS $$
+				BEGIN
+				    IF input_data IS NULL THEN
+				        RETURN;
+				    END IF;
 
-				create or replace function public.pb_json_extract(data anyelement, path text) returns text
-				    immutable
-				    language plpgsql
-				as
-				$$
-				DECLARE
-				    input_jsonb jsonb;
-				    json_path jsonpath;
-				    result text;
+				    IF pg_typeof(input_data) = 'jsonb'::regtype THEN
+				        RETURN QUERY SELECT * FROM pb_json_each(input_data::jsonb);
+				    ELSIF pg_typeof(input_data) = 'json'::regtype THEN
+				        RETURN QUERY SELECT * FROM pb_json_each(input_data::jsonb);
+				    ELSE
+				        BEGIN
+				            RETURN QUERY SELECT * FROM pb_json_each(input_data::text::jsonb);
+				        EXCEPTION WHEN others THEN
+				            RETURN QUERY SELECT input_data::text;
+				        END;
+				    END IF;
+				END;
+				$$;
+
+				CREATE OR REPLACE FUNCTION public.pb_json_array_length(input_data anyelement)
+				    RETURNS integer
+				    IMMUTABLE
+				    LANGUAGE plpgsql
+				AS $$
+				BEGIN
+				    IF input_data IS NULL OR input_data::text = '' THEN
+				        RETURN 0;
+				    END IF;
+
+				    IF pg_typeof(input_data) = 'jsonb'::regtype THEN
+				        RETURN pb_json_array_length(input_data::jsonb);
+				    ELSIF pg_typeof(input_data) = 'json'::regtype THEN
+				        RETURN pb_json_array_length(input_data::jsonb);
+				    ELSE
+				        BEGIN
+				            RETURN pb_json_array_length(input_data::text::jsonb);
+				        EXCEPTION WHEN others THEN
+				            RETURN 0;
+				        END;
+				    END IF;
+				END;
+				$$;
+
+				CREATE OR REPLACE FUNCTION public.pb_json_extract(data anyelement, path text)
+				    RETURNS text
+				    IMMUTABLE
+				    LANGUAGE plpgsql
+				AS $$
 				BEGIN
 				    IF data IS NULL OR path IS NULL THEN
 				        RETURN NULL;
 				    END IF;
 
-				    -- Try pre-cast JSON path
-				    BEGIN
-				        json_path := path::jsonpath;
-				    EXCEPTION
-				        WHEN others THEN
-				            RETURN NULL; -- Invalid path
-				    END;
-
-				    -- Detect type only once
-				    IF pg_typeof(data) IN ('jsonb'::regtype, 'json'::regtype) THEN
-				        input_jsonb := data::jsonb;
+				    IF pg_typeof(data) = 'jsonb'::regtype THEN
+				        RETURN pb_json_extract(data::jsonb, path);
+				    ELSIF pg_typeof(data) = 'json'::regtype THEN
+				        RETURN pb_json_extract(data::jsonb, path);
 				    ELSE
 				        BEGIN
-				            input_jsonb := data::text::jsonb;
-				        EXCEPTION
-				            WHEN others THEN
-				                RETURN data::text; -- Not JSON, just return as text
+				            RETURN pb_json_extract(data::text::jsonb, path);
+				        EXCEPTION WHEN others THEN
+				            RETURN data::text;
 				        END;
 				    END IF;
-
-				    -- Safe JSON query
-				    BEGIN
-				        result := jsonb_path_query_first(input_jsonb, json_path) #>> '{}';
-				        RETURN result;
-				    EXCEPTION
-				        WHEN others THEN
-				            RETURN NULL; -- In case JSON path query fails
-				    END;
 				END;
 				$$;
 
-				comment on function public.pb_json_extract(anyelement, text) is 'Extracts values from JSON data as text using a path in the format $.x.y (similar to SQLite''s JSON_EXTRACT).
-								Returns NULL for NULL inputs or when the path doesn''t exist.
-								For non-JSON inputs, attempts to convert to JSON or returns the input as text.';
+
 			`).Execute()
 
 			if execErr != nil {

@@ -16,11 +16,9 @@ import { wrap } from "svelte-spa-router/wrap";
 const routes = {
     "/pbinstal/:token": wrap({
         asyncComponent: () => import("@/components/base/PageInstaller.svelte"),
-        conditions: [
-            (details) => {
-                return details.params.token && !isTokenExpired(details.params.token);
-            },
-        ],
+        conditions: [(details) => {
+            return details.params.token && !isTokenExpired(details.params.token)
+        }],
         userData: { showAppSidebar: false },
     }),
 

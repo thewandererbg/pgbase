@@ -5,11 +5,8 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
-	"strings"
 
 	_ "github.com/jackc/pgx/v5/stdlib"
-	"github.com/joho/godotenv"
-	"github.com/pocketbase/dbx"
 	"github.com/thewandererbg/pgbase"
 	"github.com/thewandererbg/pgbase/apis"
 	"github.com/thewandererbg/pgbase/core"
@@ -17,27 +14,11 @@ import (
 	"github.com/thewandererbg/pgbase/plugins/jsvm"
 	"github.com/thewandererbg/pgbase/plugins/migratecmd"
 	"github.com/thewandererbg/pgbase/tools/hook"
+	"github.com/thewandererbg/pgbase/tools/osutils"
 )
 
 func main() {
-	godotenv.Load()
-
-	if os.Getenv("PB_DATA_URI") == "" {
-		log.Fatal("Please provide PB_DATA_URI env variable")
-	}
-	if os.Getenv("PB_AUX_URI") == "" {
-		log.Fatal("Please provide PB_AUX_URI env variable")
-	}
-
-	app := pgbase.NewWithConfig(pgbase.Config{
-		DefaultDev: false,
-		DBConnect: func(dbPath string) (*dbx.DB, error) {
-			if strings.Contains(dbPath, "data.db") {
-				return dbx.Open("pgx", os.Getenv("PB_DATA_URI"))
-			}
-			return dbx.Open("pgx", os.Getenv("PB_AUX_URI"))
-		},
-	})
+	app := pgbase.New()
 
 	// ---------------------------------------------------------------
 	// Optional plugin flags:
@@ -143,8 +124,7 @@ func main() {
 
 // the default pb_public dir location is relative to the executable
 func defaultPublicDir() string {
-	if strings.HasPrefix(os.Args[0], os.TempDir()) {
-		// most likely ran with go run
+	if osutils.IsProbablyGoRun() {
 		return "./pb_public"
 	}
 

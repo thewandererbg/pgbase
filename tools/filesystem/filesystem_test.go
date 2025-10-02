@@ -526,7 +526,7 @@ func TestFileSystemServe(t *testing.T) {
 	}
 }
 
-func TestFileSystemGetFile(t *testing.T) {
+func TestFileSystemGetReader(t *testing.T) {
 	dir := createTestDir(t)
 	defer os.RemoveAll(dir)
 
@@ -547,7 +547,7 @@ func TestFileSystemGetFile(t *testing.T) {
 
 	for _, s := range scenarios {
 		t.Run(s.file, func(t *testing.T) {
-			f, err := fsys.GetFile(s.file)
+			f, err := fsys.GetReader(s.file)
 			defer func() {
 				if f != nil {
 					f.Close()
@@ -578,6 +578,83 @@ func TestFileSystemGetFile(t *testing.T) {
 	}
 }
 
+func TestFileSystemGetReuploadableFile(t *testing.T) {
+	dir := createTestDir(t)
+	defer os.RemoveAll(dir)
+
+	fsys, err := filesystem.NewLocal(dir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer fsys.Close()
+
+	t.Run("missing.txt", func(t *testing.T) {
+		_, err := fsys.GetReuploadableFile("missing.txt", false)
+		if err == nil {
+			t.Fatal("Expected error, got nil")
+		}
+	})
+
+	testReader := func(t *testing.T, f *filesystem.File, expectedContent string) {
+		r, err := f.Reader.Open()
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		raw, err := io.ReadAll(r)
+		if err != nil {
+			t.Fatal(err)
+		}
+		rawStr := string(raw)
+
+		if rawStr != expectedContent {
+			t.Fatalf("Expected content %q, got %q", expectedContent, rawStr)
+		}
+	}
+
+	t.Run("existing (preserve name)", func(t *testing.T) {
+		file, err := fsys.GetReuploadableFile("test/sub1.txt", true)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if v := file.OriginalName; v != "sub1.txt" {
+			t.Fatalf("Expected originalName %q, got %q", "sub1.txt", v)
+		}
+
+		if v := file.Size; v != 4 {
+			t.Fatalf("Expected size %d, got %d", 4, v)
+		}
+
+		if v := file.Name; v != "sub1.txt" {
+			t.Fatalf("Expected name to be preserved, got %q", v)
+		}
+
+		testReader(t, file, "sub1")
+	})
+
+	t.Run("existing (new random suffix name)", func(t *testing.T) {
+		file, err := fsys.GetReuploadableFile("test/sub1.txt", false)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if v := file.OriginalName; v != "sub1.txt" {
+			t.Fatalf("Expected originalName %q, got %q", "sub1.txt", v)
+		}
+
+		if v := file.Size; v != 4 {
+			t.Fatalf("Expected size %d, got %d", 4, v)
+		}
+
+		if v := file.Name; v == "sub1.txt" || len(v) <= len("sub1.txt.png") {
+			t.Fatalf("Expected name to have new random suffix, got %q", v)
+		}
+
+		testReader(t, file, "sub1")
+	})
+}
+
 func TestFileSystemCopy(t *testing.T) {
 	dir := createTestDir(t)
 	defer os.RemoveAll(dir)
@@ -600,7 +677,7 @@ func TestFileSystemCopy(t *testing.T) {
 	if err := fsys.Copy(src, dst); err != nil {
 		t.Fatalf("Failed to copy %q to %q: %v", src, dst, err)
 	}
-	f, err := fsys.GetFile(dst)
+	f, err := fsys.GetReader(dst)
 	//nolint
 	defer f.Close()
 	if err != nil {
@@ -801,7 +878,7 @@ func TestFileSystemCreateThumb(t *testing.T) {
 				return
 			}
 
-			f, err := fsys.GetFile(s.thumb)
+			f, err := fsys.GetReader(s.thumb)
 			if err != nil {
 				t.Fatalf("Missing expected thumb %s (%v)", s.thumb, err)
 			}
@@ -849,7 +926,6 @@ func createTestDir(t *testing.T) string {
 
 	// png
 	{
-
 		file, err := os.OpenFile(filepath.Join(dir, "image.png"), os.O_WRONLY|os.O_CREATE, 0644)
 		if err != nil {
 			t.Fatal(err)

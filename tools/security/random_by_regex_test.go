@@ -5,6 +5,7 @@ import (
 	"regexp"
 	"regexp/syntax"
 	"slices"
+	"strings"
 	"testing"
 
 	"github.com/thewandererbg/pgbase/tools/security"
@@ -23,44 +24,65 @@ func TestRandomStringByRegex(t *testing.T) {
 		{`\d+`, []syntax.Flags{syntax.POSIX}, true},
 		{`\d+`, nil, false},
 		{`\d*`, nil, false},
-		{`\d{1,10}`, nil, false},
-		{`\d{3}`, nil, false},
+		{`\d{1,20}`, nil, false},
+		{`\d{5}`, nil, false},
 		{`\d{0,}-abc`, nil, false},
-		{`[a-zA-Z]*`, nil, false},
+		{`[a-zA-Z_]*`, nil, false},
 		{`[^a-zA-Z]{5,30}`, nil, false},
 		{`\w+_abc`, nil, false},
-		{`[a-zA-Z_]*`, nil, false},
-		{`[2-9]{5}-\w+`, nil, false},
+		{`[2-9]{10}-\w+`, nil, false},
 		{`(a|b|c)`, nil, false},
+		{`gen:uuid`, nil, false},
+		{`gen:uuidv4`, nil, false},
+		{`gen:uuidv7`, nil, false},
+		{`gen:uuidv8`, nil, true},
+		{`gen:ulid`, nil, false},
+		{`gen:ulid:prefix`, nil, false},
 	}
 
 	for i, s := range scenarios {
 		t.Run(fmt.Sprintf("%d_%q", i, s.pattern), func(t *testing.T) {
-			str, err := security.RandomStringByRegex(s.pattern, s.flags...)
+			var run func(int)
+			run = func(attempt int) {
+				str, err := security.RandomStringByRegex(s.pattern, s.flags...)
 
-			hasErr := err != nil
-			if hasErr != s.expectError {
-				t.Fatalf("Expected hasErr %v, got %v (%v)", s.expectError, hasErr, err)
+				hasErr := err != nil
+				if hasErr != s.expectError {
+					t.Fatalf("Expected hasErr %v, got %v (%v)", s.expectError, hasErr, err)
+				}
+
+				if hasErr {
+					return
+				}
+
+				if strings.HasPrefix(s.pattern, "gen:") {
+					if str == "" {
+						t.Fatal("Expected non-empty string")
+					}
+				} else {
+					r, err := regexp.Compile(s.pattern)
+					if err != nil {
+						t.Fatal(err)
+					}
+					if !r.Match([]byte(str)) {
+						t.Fatalf("Expected %q to match pattern %v", str, s.pattern)
+					}
+				}
+
+				if slices.Contains(generated, str) {
+					if attempt > 3 {
+						t.Fatalf("The generated string %q already exists in\n%v", str, generated)
+					}
+
+					// rerun
+					run(attempt + 1)
+					return
+				}
+
+				generated = append(generated, str)
 			}
 
-			if hasErr {
-				return
-			}
-
-			r, err := regexp.Compile(s.pattern)
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			if !r.Match([]byte(str)) {
-				t.Fatalf("Expected %q to match pattern %v", str, s.pattern)
-			}
-
-			if slices.Contains(generated, str) {
-				t.Fatalf("The generated string %q already exists in\n%v", str, generated)
-			}
-
-			generated = append(generated, str)
+			run(1)
 		})
 	}
 }

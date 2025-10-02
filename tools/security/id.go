@@ -4,7 +4,7 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/gofrs/uuid/v5"
+	"github.com/google/uuid"
 	"github.com/oklog/ulid/v2"
 )
 
@@ -29,10 +29,10 @@ func GenerateULID() string {
 }
 
 func GenerateUUIDv4() string {
-	if u, err := uuid.NewV4(); err == nil {
+	if u, err := uuid.NewRandom(); err == nil {
 		return u.String()
 	}
-	u, _ := uuid.NewV4()
+	u, _ := uuid.NewRandom()
 	return u.String()
 }
 
