@@ -57,6 +57,11 @@ func GenerateDefaultRandomId() string {
 	return security.PseudorandomStringWithAlphabet(DefaultIdLength, DefaultIdAlphabet)
 }
 
+// GenerateDefaultULID generates a default ULID string
+func GenerateDefaultULID() string {
+	return security.GenerateULID()
+}
+
 // crc32Checksum generates a stringified crc32 checksum from the provided plain string.
 func crc32Checksum(str string) string {
 	return strconv.FormatInt(int64(crc32.ChecksumIEEE([]byte(str))), 10)

@@ -1288,7 +1288,7 @@ func (app *BaseApp) initLogger() error {
 				model := &Log{}
 				for _, l := range logs {
 					model.MarkAsNew()
-					model.Id = GenerateDefaultRandomId()
+					model.Id = "log_" + GenerateDefaultULID()
 					model.Level = int(l.Level)
 					model.Message = l.Message
 					model.Data = l.Data

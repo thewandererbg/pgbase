@@ -29,6 +29,25 @@ func TestGenerateDefaultRandomId(t *testing.T) {
 	}
 }
 
+func TestGenerateDefaultULID(t *testing.T) {
+	t.Parallel()
+
+	id1 := core.GenerateDefaultULID()
+	id2 := core.GenerateDefaultULID()
+
+	if id1 == id2 {
+		t.Fatalf("Expected id1 and id2 to differ, got %q", id1)
+	}
+
+	if l := len(id1); l != 26 {
+		t.Fatalf("Expected id1 length %d, got %d", 26, l)
+	}
+
+	if l := len(id2); l != 26 {
+		t.Fatalf("Expected id2 length %d, got %d", 26, l)
+	}
+}
+
 func TestModelQuery(t *testing.T) {
 	t.Parallel()
 
