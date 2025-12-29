@@ -62,6 +62,20 @@ func TestNewBaseApp(t *testing.T) {
 	if app.Cron() == nil {
 		t.Fatal("expected Cron to be set, got nil")
 	}
+
+	config := app.Config()
+	if config == nil {
+		t.Fatal("expected Config to be set, got nil")
+	}
+
+	if app.MultiInstanceEnabled() {
+		t.Fatalf("expected MultiInstanceEnabled to be false by default, got %v", config.MultiInstanceEnabled)
+	}
+
+	config.MultiInstanceEnabled = true
+	if !app.MultiInstanceEnabled() {
+		t.Fatal("expected MultiInstanceEnabled to be true after setting, got false")
+	}
 }
 
 func TestBaseAppBootstrap(t *testing.T) {

@@ -37,15 +37,15 @@ func (app *BaseApp) registerSettingsHooks() {
 			return err
 		}
 
-		if me.Model.PK() == paramsKeySettings {
-			// auto reload the app settings because we don't know whether
-			// the Settings model is the app one or a different one
-			return errors.Join(
-				me.App.Settings().PostScan(),
-				me.App.ReloadSettings(),
-			)
+		if me.Model.PK() != paramsKeySettings {
+			return nil
 		}
 
+		if err := me.App.Settings().PostScan(); err != nil {
+			return err
+		}
+
+		me.App.EnsureSettingsCacheFresh()
 		return nil
 	}
 

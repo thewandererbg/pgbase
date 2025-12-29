@@ -16,3 +16,9 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+
+  redis:
+    image: valkey/valkey:latest
+    container_name: pb_redis
+    ports:
+      - "6379:6379"

@@ -33,6 +33,12 @@ type TestApp struct {
 	TestMailer *TestMailer
 }
 
+// TestAppConfig holds optional configuration for test apps
+type TestAppConfig struct {
+	MultiInstanceEnabled bool
+	PubSubDataURI        string
+}
+
 // Cleanup resets the test application state and removes the test
 // app's dataDir from the filesystem.
 //
@@ -62,14 +68,13 @@ func (t *TestApp) Cleanup() {
 		}
 		defer db.Close()
 
-		log.Println("Dropping database:", dataDB)
 		_, err = db.NewQuery("drop database if exists " + dataDB + ";").Execute()
 		if err != nil {
-			log.Println("Error dropping database:", err)
+			// log.Println("Error dropping database:", err)
 		}
 		_, err = db.NewQuery("drop database if exists " + auxDB + ";").Execute()
 		if err != nil {
-			log.Println("Error dropping auxiliary database:", err)
+			// log.Println("Error dropping auxiliary database:", err)
 		}
 	}
 }
@@ -97,6 +102,11 @@ func (t *TestApp) registerEventCall(name string) {
 //
 // It is the caller's responsibility to call app.Cleanup() when the app is no longer needed.
 func NewTestApp(optTestDataDir ...string) (*TestApp, error) {
+	return NewTestAppWithOptions(TestAppConfig{}, optTestDataDir...)
+}
+
+// NewTestAppWithOptions creates a test app with custom config options
+func NewTestAppWithOptions(config TestAppConfig, optTestDataDir ...string) (*TestApp, error) {
 	var testDataDir string
 	if len(optTestDataDir) > 0 {
 		testDataDir = optTestDataDir[0]
@@ -115,27 +125,28 @@ func NewTestApp(optTestDataDir ...string) (*TestApp, error) {
 
 	dataDB := strings.ReplaceAll(testDataDir, "/tmp/", "")
 	auxDB := dataDB + "_aux"
+	dataURL := strings.Replace(dbURL, "pbdb", dataDB, 1)
+	auxURL := strings.Replace(dbURL, "pbdb", auxDB, 1)
 
 	_, err = db.NewQuery("create database " + dataDB + " WITH TEMPLATE pbtest;").Execute()
 	if err != nil {
-		log.Print("Error creating dataDB:", err)
-		return nil, err
+		// log.Print("Error creating dataDB:", err)
 	}
 	_, err = db.NewQuery("create database " + auxDB + ";").Execute()
 	if err != nil {
-		log.Print("Error creating auxDB:", err)
-		return nil, err
+		// log.Print("Error creating auxDB:", err)
 	}
 
 	return NewTestAppWithConfig(core.BaseAppConfig{
-		DataDir: testDataDir,
-		// IsDev:         true,
-		EncryptionEnv: "pb_test_env",
+		DataDir:              testDataDir,
+		EncryptionEnv:        "pb_test_env",
+		MultiInstanceEnabled: config.MultiInstanceEnabled,
+		PubSubDataURI:        config.PubSubDataURI,
 		DBConnect: func(dbPath string) (*dbx.DB, error) {
 			if strings.Contains(dbPath, "data.db") {
-				return dbx.Open("pgx", strings.Replace(dbURL, "pbdb", dataDB, 1))
+				return dbx.Open("pgx", dataURL)
 			}
-			return dbx.Open("pgx", strings.Replace(dbURL, "pbdb", auxDB, 1))
+			return dbx.Open("pgx", auxURL)
 		},
 	})
 }

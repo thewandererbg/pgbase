@@ -681,9 +681,7 @@ func onCollectionDeleteExecute(e *CollectionEvent) error {
 	}
 
 	defer func() {
-		if err := e.App.ReloadCachedCollections(); err != nil {
-			e.App.Logger().Warn("Failed to reload collections cache", "error", err)
-		}
+		e.App.EnsureCollectionsCacheFresh()
 	}()
 
 	if !e.Collection.disableIntegrityChecks {
@@ -818,9 +816,7 @@ func onCollectionSave(e *CollectionEvent) error {
 
 func onCollectionSaveExecute(e *CollectionEvent) error {
 	defer func() {
-		if err := e.App.ReloadCachedCollections(); err != nil {
-			e.App.Logger().Warn("Failed to reload collections cache", "error", err)
-		}
+		e.App.EnsureCollectionsCacheFresh()
 	}()
 
 	var oldCollection *Collection

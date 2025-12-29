@@ -31,11 +31,12 @@ var Version = "(untracked)"
 type PocketBase struct {
 	core.App
 
-	devFlag           bool
-	dataDirFlag       string
-	encryptionEnvFlag string
-	queryTimeout      int
-	hideStartBanner   bool
+	devFlag                  bool
+	dataDirFlag              string
+	encryptionEnvFlag        string
+	queryTimeout             int
+	multiInstanceEnabledFlag bool
+	hideStartBanner          bool
 
 	// RootCmd is the main console command
 	RootCmd *cobra.Command
@@ -51,6 +52,9 @@ type Config struct {
 	DefaultDataDir       string // if not set, it will fallback to "./pb_data"
 	DefaultEncryptionEnv string
 	DefaultQueryTimeout  time.Duration // default to core.DefaultQueryTimeout (in seconds)
+
+	// enable multi-instance mode (cross-pod cache invalidation via PostgreSQL LISTEN/NOTIFY)
+	DefaultMultiInstanceEnabled bool
 
 	// optional DB configurations
 	DataMaxOpenConns int                // default to core.DefaultDataMaxOpenConns
@@ -109,10 +113,11 @@ func NewWithConfig(config Config) *PocketBase {
 				DisableDefaultCmd: true,
 			},
 		},
-		devFlag:           config.DefaultDev,
-		dataDirFlag:       config.DefaultDataDir,
-		encryptionEnvFlag: config.DefaultEncryptionEnv,
-		hideStartBanner:   config.HideStartBanner,
+		devFlag:                  config.DefaultDev,
+		dataDirFlag:              config.DefaultDataDir,
+		encryptionEnvFlag:        config.DefaultEncryptionEnv,
+		multiInstanceEnabledFlag: config.DefaultMultiInstanceEnabled,
+		hideStartBanner:          config.HideStartBanner,
 	}
 
 	// replace with a colored stderr writer
@@ -124,15 +129,16 @@ func NewWithConfig(config Config) *PocketBase {
 
 	// initialize the app instance
 	pb.App = core.NewBaseApp(core.BaseAppConfig{
-		IsDev:            pb.devFlag,
-		DataDir:          pb.dataDirFlag,
-		EncryptionEnv:    pb.encryptionEnvFlag,
-		QueryTimeout:     time.Duration(pb.queryTimeout) * time.Second,
-		DataMaxOpenConns: config.DataMaxOpenConns,
-		DataMaxIdleConns: config.DataMaxIdleConns,
-		AuxMaxOpenConns:  config.AuxMaxOpenConns,
-		AuxMaxIdleConns:  config.AuxMaxIdleConns,
-		DBConnect:        config.DBConnect,
+		IsDev:                pb.devFlag,
+		DataDir:              pb.dataDirFlag,
+		EncryptionEnv:        pb.encryptionEnvFlag,
+		QueryTimeout:         time.Duration(pb.queryTimeout) * time.Second,
+		DataMaxOpenConns:     config.DataMaxOpenConns,
+		DataMaxIdleConns:     config.DataMaxIdleConns,
+		AuxMaxOpenConns:      config.AuxMaxOpenConns,
+		AuxMaxIdleConns:      config.AuxMaxIdleConns,
+		MultiInstanceEnabled: pb.multiInstanceEnabledFlag,
+		DBConnect:            config.DBConnect,
 	})
 
 	// hide the default help command (allow only `--help` flag)
@@ -223,6 +229,14 @@ func (pb *PocketBase) eagerParseFlags(config *Config) error {
 		"the default SELECT queries timeout in seconds",
 	)
 
+	pb.RootCmd.PersistentFlags().BoolVarP(
+		&pb.multiInstanceEnabledFlag,
+		"multi-instance",
+		"m",
+		config.DefaultMultiInstanceEnabled,
+		"enable multi-instance mode (cross-pod cache invalidation via PostgreSQL LISTEN/NOTIFY)",
+	)
+
 	return pb.RootCmd.ParseFlags(os.Args[1:])
 }
 
@@ -232,8 +246,8 @@ func (pb *PocketBase) eagerParseFlags(config *Config) error {
 // - is the default help command
 // - is the default version command
 //
-// https://github.com/thewandererbg/pgbase/issues/404
-// https://github.com/thewandererbg/pgbase/discussions/1267
+// https://github.com/pocketbase/pocketbase/issues/404
+// https://github.com/pocketbase/pocketbase/discussions/1267
 func (pb *PocketBase) skipBootstrap() bool {
 	flags := []string{
 		"-h",

@@ -67,6 +67,16 @@ type App interface {
 	// When enabled logs, executed sql statements, etc. are printed to the stderr.
 	IsDev() bool
 
+	// MultiInstanceEnabled returns whether pub/sub is enabled for
+	// distributing events across multiple app instances.
+	MultiInstanceEnabled() bool
+
+	// EnsureCollectionsCacheFresh reloads locally or broadcasts invalidation (multi instances).
+	EnsureCollectionsCacheFresh()
+
+	// EnsureSettingsCacheFresh reloads locally or broadcasts invalidation (multi instances).
+	EnsureSettingsCacheFresh()
+
 	// Settings returns the loaded app settings.
 	Settings() *Settings
 

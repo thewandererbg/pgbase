@@ -4,9 +4,9 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/spf13/cobra"
 	"github.com/thewandererbg/pgbase/apis"
 	"github.com/thewandererbg/pgbase/core"
-	"github.com/spf13/cobra"
 )
 
 // NewServeCommand creates and returns new command responsible for
@@ -15,6 +15,7 @@ func NewServeCommand(app core.App, showStartBanner bool) *cobra.Command {
 	var allowedOrigins []string
 	var httpAddr string
 	var httpsAddr string
+	var multiInstanceEnabled bool
 
 	command := &cobra.Command{
 		Use:          "serve [domain(s)]",
@@ -71,6 +72,14 @@ func NewServeCommand(app core.App, showStartBanner bool) *cobra.Command {
 		"https",
 		"",
 		"TCP address to listen for the HTTPS server\n(if domain args are specified - default to 0.0.0.0:443, otherwise - default to empty string, aka. no TLS)\nThe incoming HTTP traffic also will be auto redirected to the HTTPS version",
+	)
+
+	command.PersistentFlags().BoolVarP(
+		&multiInstanceEnabled,
+		"multi-instance",
+		"m",
+		false,
+		"Enable multi-instance mode (cross-pod cache invalidation)",
 	)
 
 	return command

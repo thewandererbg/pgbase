@@ -1,6 +1,6 @@
 module github.com/thewandererbg/pgbase
 
-go 1.24.7
+go 1.25.5
 
 require (
 	github.com/disintegration/imaging v1.6.2

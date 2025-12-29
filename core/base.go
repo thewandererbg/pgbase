@@ -52,15 +52,17 @@ type DBConnectFunc func(dbPath string) (*dbx.DB, error)
 
 // BaseAppConfig defines a BaseApp configuration option
 type BaseAppConfig struct {
-	DBConnect        DBConnectFunc
-	DataDir          string
-	EncryptionEnv    string
-	QueryTimeout     time.Duration
-	DataMaxOpenConns int
-	DataMaxIdleConns int
-	AuxMaxOpenConns  int
-	AuxMaxIdleConns  int
-	IsDev            bool
+	DBConnect            DBConnectFunc
+	DataDir              string
+	EncryptionEnv        string
+	QueryTimeout         time.Duration
+	DataMaxOpenConns     int
+	DataMaxIdleConns     int
+	AuxMaxOpenConns      int
+	AuxMaxIdleConns      int
+	IsDev                bool
+	MultiInstanceEnabled bool
+	PubSubDataURI        string // this is used only for test, don't use it in production
 }
 
 // ensures that the BaseApp implements the App interface.
@@ -417,6 +419,13 @@ func (app *BaseApp) Bootstrap() error {
 		// try to cleanup the pb_data temp directory (if any)
 		_ = os.RemoveAll(filepath.Join(app.DataDir(), LocalTempDirName))
 
+		// start optional pub/sub if enabled
+		if app.MultiInstanceEnabled() {
+			if err := app.startPubSub(); err != nil {
+				return err
+			}
+		}
+
 		return nil
 	})
 
@@ -437,6 +446,9 @@ type closer interface {
 // (closing db connections, stopping cron ticker, etc.).
 func (app *BaseApp) ResetBootstrapState() error {
 	app.Cron().Stop()
+
+	// stop pub/sub listener if running
+	app.stopPubSub()
 
 	var errs []error
 
@@ -524,6 +536,29 @@ func (app *BaseApp) EncryptionEnv() string {
 // When enabled logs, executed sql statements, etc. are printed to the stderr.
 func (app *BaseApp) IsDev() bool {
 	return app.config.IsDev
+}
+
+// IsNotifyEnabled returns whether cross-pod cache invalidation via PG NOTIFY is enabled
+func (app *BaseApp) MultiInstanceEnabled() bool {
+	return app.config.MultiInstanceEnabled
+}
+
+// StartPubSub starts the pub/sub listener.
+// This is a wrapper around startPubSub for testing purposes.
+func (app *BaseApp) StartPubSub() error {
+	return app.startPubSub()
+}
+
+// StopPubSub stops the pub/sub listener.
+// This is a wrapper around stopPubSub for testing purposes.
+func (app *BaseApp) StopPubSub() {
+	app.stopPubSub()
+}
+
+// Config returns a pointer to the app configuration.
+// This is primarily for testing purposes.
+func (app *BaseApp) Config() *BaseAppConfig {
+	return app.config
 }
 
 // Settings returns the loaded app settings.
